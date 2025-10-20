@@ -37,7 +37,7 @@ public class MyGlobalExceptionHandler {
    public ResponseEntity<String> myApiException(ApiException e)
    {
        String message= e.getMessage();
-       return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+       return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
    }
 
 }
