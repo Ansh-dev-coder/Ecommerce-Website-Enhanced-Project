@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,5 +22,7 @@ public class Category {
     @Size(min=5)
     private String categoryName;
 
+    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
+    List<Product> products;
 
 }
