@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, Long> {
+public interface CategoryRepository extends JpaRepository<Category, Long>
+{
     Category findByCategoryName(@NotBlank @Size(min=5, message = "Name must be contain 5 or more then 5 characters") String categoryName);
 }

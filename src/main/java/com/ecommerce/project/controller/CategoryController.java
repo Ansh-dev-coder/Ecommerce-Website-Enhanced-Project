@@ -7,6 +7,7 @@ import com.ecommerce.project.payload.CategoryDto;
 import com.ecommerce.project.payload.CategoryResponse;
 import com.ecommerce.project.service.CategoryService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,20 +17,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class CategoryController {
 
+    @Autowired
     private CategoryService categoryService;
-
-    public CategoryController(CategoryService categoryService)
-    {
-        this.categoryService=categoryService;
-    }
 
     @GetMapping("/public/categories")
     public ResponseEntity<CategoryResponse> getAllCategories(
             @RequestParam(value = "pageNumber",defaultValue = AppConst.PAGE_NUMBER , required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", defaultValue = AppConst.PAGE_SIZE,required = false) Integer pageSize,
             @RequestParam(value = "sortBy",defaultValue = AppConst.SORT_CATEGORIES_BY,required = false) String sortBy,
-            @RequestParam(value = "sortOrder",defaultValue = AppConst.SORT_DIR,required = false) String sortOrder
-            )
+            @RequestParam(value = "sortOrder",defaultValue = AppConst.SORT_DIR,required = false) String sortOrder)
      {
         CategoryResponse  categoryResponse=categoryService.getAllCategories(pageNumber,pageSize,sortBy,sortOrder);
         return new ResponseEntity<>(categoryResponse, HttpStatus.OK);
@@ -37,7 +33,6 @@ public class CategoryController {
 
     @PostMapping("/public/categories")
     public ResponseEntity<CategoryDto> createCategory(@Valid @RequestBody CategoryDto categoryDto) {
-
        CategoryDto savedCategoryDto= categoryService.createCategory(categoryDto);
         return new  ResponseEntity<>(savedCategoryDto, HttpStatus.CREATED);
     }
@@ -49,7 +44,8 @@ public class CategoryController {
     }
 
     @PutMapping("public/categories/{categoryId}")
-    public ResponseEntity<CategoryDto> updateCategory(@Valid @RequestBody CategoryDto categoryDto,@PathVariable Long categoryId) {
+    public ResponseEntity<CategoryDto> updateCategory(@Valid @RequestBody CategoryDto categoryDto,
+                                                      @PathVariable Long categoryId) {
             CategoryDto savedCategory=categoryService.updateCategory(categoryDto,categoryId);
             return new ResponseEntity<>(savedCategory, HttpStatus.OK);
     }

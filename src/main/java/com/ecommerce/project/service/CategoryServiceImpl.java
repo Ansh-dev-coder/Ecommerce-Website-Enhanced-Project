@@ -52,7 +52,6 @@ public class CategoryServiceImpl implements CategoryService {
         categoryResponse.setLastPage(categoryPage.isLast());
         return categoryResponse;
     }
-
     @Override
     public CategoryDto createCategory(CategoryDto categoryDto) {
         Category category=modelMapper.map(categoryDto, Category.class);
@@ -79,7 +78,6 @@ public class CategoryServiceImpl implements CategoryService {
        return modelMapper.map(category,CategoryDto.class);
 
     }
-
     @Override
     public CategoryDto updateCategory(CategoryDto categoryDto, Long categoryId) {
 
@@ -104,6 +102,4 @@ public class CategoryServiceImpl implements CategoryService {
        Category  savedCategory=categoryRepository.save(category);
         return modelMapper.map(savedCategory,CategoryDto.class);
     }
-
-
 }
