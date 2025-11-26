@@ -17,9 +17,7 @@ public class SignupRequest {
     private String username;
     @NotBlank
     private String email;
-    @NotBlank
     private Set<String> roles;
     @NotBlank
-    @Size(min = 8,max = 30)
     private String password;
 }

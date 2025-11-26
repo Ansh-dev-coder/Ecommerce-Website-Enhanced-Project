@@ -91,6 +91,7 @@ public class WebSecurityConfig {
               "/webjars/**"
               ));
     }
+    @Bean
     public CommandLineRunner init(RoleRepository roleRepository, UserRepository userRepository,PasswordEncoder passwordEncoder)
     {
         return args -> {
@@ -117,17 +118,20 @@ public class WebSecurityConfig {
             User user1 = new User("user1",
                     "user1@exapmle.com",
                     passwordEncoder.encode("user@1234"));
+            userRepository.save(user1);
         }
         if(!userRepository.existsByUsername("admin1")) {
             User admin1 = new User("admin1",
                     "admin1@example.com",
                     passwordEncoder.encode("admin@1234"));
+            userRepository.save(admin1);
         }
         if(!userRepository.existsByUsername("seller1")) {
 
             User seller1 = new User("seller1",
                     "seller1@example.com",
                     passwordEncoder.encode("seller@1234"));
+            userRepository.save(seller1);
         }
         userRepository.findByUsername("user1").ifPresent(user ->{
             user.setRoles(userRoles);
