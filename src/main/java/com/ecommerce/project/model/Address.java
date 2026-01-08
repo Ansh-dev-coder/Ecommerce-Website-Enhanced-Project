@@ -16,7 +16,7 @@ import java.util.List;
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer addressId;
+    private Long addressId;
     @NotBlank
     @Size(min = 4,message = "street must be at least 4 characters")
     private String street;
@@ -35,9 +35,10 @@ public class Address {
     @NotBlank
     @Size(min = 4,message = "pincode must be 4 characters")
     private String pincode;
-    @ToString.Exclude
-    @ManyToMany(mappedBy = "addresses")
-    private List<User> users=new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name="user_id")
+    private User user;
     public Address(String street, String buildingName, String city, String state, String country,String pincode)
     {
         this.street=street;
