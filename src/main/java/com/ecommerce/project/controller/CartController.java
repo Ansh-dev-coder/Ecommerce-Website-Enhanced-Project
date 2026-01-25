@@ -7,6 +7,11 @@ import com.ecommerce.project.payload.CartDTO;
 import com.ecommerce.project.repositories.CartRepository;
 import com.ecommerce.project.service.CartService;
 import com.ecommerce.project.util.AuthUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +33,12 @@ public class CartController {
     private CartRepository cartRepository;
 
 
+    @Tag(name = "Cart APIs",description = "APIs for managing Cart")
+    @Operation(summary = "Adding product to cart",description = "Api to adding the product to the cart")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Added Successfully"),
+            @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
+            @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
+
     @PostMapping("carts/products/{productId}/quantity/{quantity}")
     public ResponseEntity<CartDTO> addProductToCart(@PathVariable Long productId,
                                                     @PathVariable Integer quantity)
@@ -36,12 +47,25 @@ public class CartController {
         return new ResponseEntity<CartDTO>(cartDTO, HttpStatus.OK);
     }
 
+    @Tag(name = "Cart APIs",description = "APIs for managing Cart")
+    @Operation(summary = "getting all carts ",description = "Api to get the carts")
+    @ApiResponses({@ApiResponse(responseCode = "302",description = " Found Successfully"),
+            @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
+            @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
+
     @GetMapping("/carts")
     public ResponseEntity<List<CartDTO>> getCarts()
     {
         List<CartDTO> cartDTOS=cartService.getAllCarts();
         return new ResponseEntity<>(cartDTOS,HttpStatus.FOUND);
     }
+
+
+    @Tag(name = "Cart APIs",description = "APIs for managing Cart")
+    @Operation(summary = "get the cart by id",description = "Api to get the cart by id")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Found  Successfully"),
+            @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
+            @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
 
     @GetMapping("/carts/users/carts")
     public ResponseEntity<CartDTO> getCartById()
@@ -59,6 +83,12 @@ public class CartController {
         return new ResponseEntity<>(cartDTO,HttpStatus.OK);
     }
 
+    @Tag(name = "Cart APIs",description = "APIs for managing Cart")
+    @Operation(summary = "updating the product present in the cart",description = "Api to update the product into the cart")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "updated Successfully"),
+            @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
+            @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
+
     @PutMapping("/cart/products/{productId}/quantity/{operation}")
     public ResponseEntity<CartDTO> updateCartProduct(@PathVariable Long productId,
                                                      @PathVariable String operation)
@@ -69,6 +99,12 @@ public class CartController {
         return new ResponseEntity<>(cartDTO,HttpStatus.OK);
     }
 
+
+    @Tag(name = "Cart APIs",description = "APIs for managing Cart")
+    @Operation(summary = "Deleting the  product from the cart",description = "Api to deleting the product from the cart")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Deleted Successfully"),
+            @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
+            @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
     @DeleteMapping("/carts/{cartId}/product/{productId}")
     public ResponseEntity<String> deleteProductFromCart(@PathVariable Long cartId,
                                                         @PathVariable Long productId)

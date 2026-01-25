@@ -12,6 +12,11 @@ import com.ecommerce.project.security.request.LoginRequest;
 import com.ecommerce.project.security.request.SignupRequest;
 import com.ecommerce.project.security.response.MessageResponse;
 import com.ecommerce.project.security.response.UserInfoResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -41,6 +46,13 @@ public class AuthController {
     private RoleRepository roleRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Tag(name = "Auth APIs",description = "APIs for managing users")
+    @Operation(summary = "Signing in the Existing user",description = "Api to sign in the existing user")
+    @ApiResponses({@ApiResponse(responseCode = "302",description = "Authentication Successfull"),
+            @ApiResponse(responseCode = "404",description = "There is no user found with these details"),
+            @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
+            @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
     @PostMapping("signin")
     public ResponseEntity<?> authentication(@RequestBody LoginRequest loginRequest)
 {
@@ -67,6 +79,12 @@ public class AuthController {
     UserInfoResponse response=new UserInfoResponse(userDetail.getId(),userDetail.getUsername(),roles);
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,jwtCookie.toString()).body(response);
 }
+
+    @Tag(name = "Auth APIs",description = "APIs for managing users")
+    @Operation(summary = "Sign Up the  new user",description = "Api to sign up the new user")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Register  Successfull"),
+            @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
+            @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
 @PostMapping("signup")
 public ResponseEntity<?> register(@Valid @RequestBody SignupRequest signupRequest)
 {
@@ -116,6 +134,12 @@ public ResponseEntity<?> register(@Valid @RequestBody SignupRequest signupReques
     userRepository.save(user);
     return ResponseEntity.ok(new MessageResponse("Message : user is registered"));
 }
+
+    @Tag(name = "Auth APIs",description = "APIs for managing users")
+    @Operation(summary = "Getting the  Existing users's username",description = "Api to get  the existing user's username")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Found Successfull"),
+            @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
+            @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
     @GetMapping("getusername")
    public String getUsername(Authentication authentication)
    {
@@ -128,6 +152,12 @@ public ResponseEntity<?> register(@Valid @RequestBody SignupRequest signupReques
            return "";
        }
    }
+
+    @Tag(name = "Auth APIs",description = "APIs for managing users")
+    @Operation(summary = " Get the Existing user's details",description = "Api to get the existing user's details")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Found Successfull"),
+            @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
+            @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
    @GetMapping("getuserdetails")
    public ResponseEntity<?> getUser(Authentication authentication)
    {
@@ -139,6 +169,12 @@ public ResponseEntity<?> register(@Valid @RequestBody SignupRequest signupReques
        return ResponseEntity.ok(userInfoResponse);
    }
 
+
+    @Tag(name = "Auth APIs",description = "APIs for managing users")
+    @Operation(summary = "Sign out the Existing user",description = "Api to sign out the existing user")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Logout Successfully"),
+            @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
+            @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
    @PostMapping("signout")
    public ResponseEntity<?> signoutUser()
    {

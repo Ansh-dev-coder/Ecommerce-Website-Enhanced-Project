@@ -38,6 +38,7 @@ public class JwtUtils {
             return null;
         }
     }
+
 public ResponseCookie generateJwtCookie(UserDetailImpl userDetail)
 {
         String jwt=generateJwtTokenFromUsername(userDetail.getUsername());
@@ -54,15 +55,15 @@ public ResponseCookie getCleanCookie()
     ResponseCookie cookie=ResponseCookie.from(jwtCookie,null).path("/api").build();
     return cookie;
 }
-//   public String getJwtFromHeaders(HttpServletRequest request)
-//   {
-//       String bearerToken =request.getHeader("Authorization");
-//        if(bearerToken !=null && bearerToken.startsWith("Bearer "))
-//        {
-//            return bearerToken.substring(7);
-//        }
-//        return null ;
-//   }
+   public String getJwtFromHeaders(HttpServletRequest request)
+   {
+       String bearerToken =request.getHeader("Authorization");
+        if(bearerToken !=null && bearerToken.startsWith("Bearer "))
+        {
+            return bearerToken.substring(7);
+        }
+        return null ;
+   }
    public String generateJwtTokenFromUsername(String username)
    {
 //       String username=userDetail.getUsername();
