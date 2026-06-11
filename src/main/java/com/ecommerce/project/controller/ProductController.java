@@ -44,12 +44,15 @@ public class ProductController {
             @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
             @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
     @GetMapping("public/products")
-    public ResponseEntity<ProductResponse> getAllProducts(@RequestParam(name = "pageNumber",defaultValue = AppConst.PAGE_NUMBER,required = false)Integer pageNumber,
+    public ResponseEntity<ProductResponse> getAllProducts(
+                                                          @RequestParam(name = "pageNumber",defaultValue = AppConst.PAGE_NUMBER,required = false)Integer pageNumber,
                                                           @RequestParam(name = "pageSize",defaultValue = AppConst.PAGE_SIZE,required = false)Integer pageSize,
                                                           @RequestParam(name = "sortBy",defaultValue = AppConst.SORT_PRODUCT_BY,required = false)String sortBy,
-                                                          @RequestParam(name = "sortOrder",defaultValue = AppConst.SORT_DIR,required = false)String sortOrder)
+                                                          @RequestParam(name = "sortOrder",defaultValue = AppConst.SORT_DIR,required = false)String sortOrder,
+                                                          @RequestParam(name = "keyword",required = false)String keyword,
+                                                          @RequestParam(name = "category" , required = false)String category)
     {
-        ProductResponse productResponse = productService.getAllProducts(pageNumber,pageSize,sortBy,sortOrder);
+        ProductResponse productResponse = productService.getAllProducts(pageNumber,pageSize,sortBy,sortOrder,keyword,category);
         return new ResponseEntity<>(productResponse, HttpStatus.OK);
     }
 
