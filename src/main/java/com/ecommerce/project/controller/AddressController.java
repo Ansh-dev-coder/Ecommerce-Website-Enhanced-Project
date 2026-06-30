@@ -70,7 +70,7 @@ public class AddressController {
     @ApiResponses({@ApiResponse(responseCode = "200",description = "Successfull"),
             @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
             @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
-    @GetMapping("/users/address")
+    @GetMapping("/user/address")
     public ResponseEntity<List<AddressDTO>> getAddressByUser()
     {
         User user=authUtil.loggedInUser();

@@ -46,6 +46,7 @@ public ResponseCookie generateJwtCookie(UserDetailImpl userDetail)
                 .path("/api")
                 .maxAge(24*60*60)
                 .httpOnly(false)
+                .secure(false)
                 .build();
         return cookie;
 }
@@ -70,8 +71,8 @@ public ResponseCookie getCleanCookie()
        return Jwts.builder()
                .subject(username)
                .issuedAt(new Date())
-               .expiration(new Date(new Date().getTime()+jwtExpirationMs)).
-               signWith(key())
+               .expiration(new Date(new Date().getTime()+jwtExpirationMs))
+               .signWith(key())
                .compact();
    }
    public String getUsernameFromJwtToken(String token)
