@@ -42,13 +42,27 @@ const AddressInfo=({address})=>{
                 {isLoading ? (
                     <div className="mt-6">
                  <Skeleton/></div>   
-                ):(<div className="mt-6">
+                ):(
+                    <>
+                <div className="mt-6">
                     <p className="text-sm text-slate-600">
                         <AddressList
                            addresses={address}
                            selectedAddress={setSelectedAddress}
                            setopenAddressModal={openAddressModal} /></p>
-                </div>)}
+                </div>
+                {address.length>0 && ( 
+                     <div className="mt-6">
+                        <button
+                        onClick={addNewAddressHandler}
+                        className="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400"
+                        >
+                            Add More
+                        </button>
+                     </div>
+                )}
+                </>
+            )}
 
                 </div>
             )}
