@@ -1,0 +1,33 @@
+.input-field {
+  width: 100%;
+  border-color: #d1d5db;
+  background: #ffffff;
+  color: #111827;
+  box-shadow: none;
+}
+
+.input-field:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+
+.input-field--error {
+  border-color: #ef4444;
+}
+
+.input-field--error:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 4px rgba(254, 202, 202, 0.25);
+}
+
+.input-field-wrapper {
+  display: block;
+}
+
+.input-field-label {
+  color: #374151;
+}
+
+.input-error-message {
+  color: #b91c1c;
+}
