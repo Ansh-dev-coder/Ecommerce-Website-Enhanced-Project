@@ -168,7 +168,17 @@ export const addUpdateUserAddress=(sendData,toast,addressId,setOpenAddressModal,
 const { user}=getState().auth
 dispatch({type : "BUTTON_LOADER"})
 try{
-    const {data}=await api.post("/addresses",sendData)
+
+   
+
+    if(addressId){
+        const {data}=await api.put(`addresses/${addressId}`,sendData)
+            
+    }else{
+         
+         const {data}=await api.post("/addresses",sendData)
+    }
+    dispatch(getUserAddress())
     toast.success("Address saved successfully")
     dispatch({type:"IS_SUCCESS"})
 }catch (error) {
