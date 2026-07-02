@@ -1,6 +1,7 @@
 import { FaAddressCard } from "react-icons/fa"
 import InputField from "../Components/shared/InputField"
 import { useDispatch, useSelector } from "react-redux"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import Spinners from "../Components/shared/Spinners"
 import toast from "react-hot-toast"
@@ -14,6 +15,7 @@ const AddAddressForm = ({address , setOpenAddressModal}) => {
   const {
     register,
     reset,
+    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -24,18 +26,38 @@ const AddAddressForm = ({address , setOpenAddressModal}) => {
     dispatch(addUpdateUserAddress(data,toast,address?.addressId,setOpenAddressModal))
   }
 
+  useEffect(() => {
+    if(address?.addressId){
+      setValue("street", address?.street)
+      setValue("buildingName", address?.buildingName)
+      setValue("city", address?.city)
+      setValue("state", address?.state)
+      setValue("country", address?.country)
+      setValue("pincode", address?.pincode)
+    }
+  }, [address])
   return (
     <div className="w-full">
       <div className="flex flex-col items-center gap-3 text-center mb-6">
           <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
             <FaAddressCard size={28} />
           </div>
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">Add New Address</h1>
+          {!address?.addressId ?  <div>
+            <h1 className="text-3xl font-bold text-slate-900">
+              Add New Address
+              </h1>
             <p className="mt-2 text-sm text-slate-500">
               Enter your shipping details to continue checkout.
             </p>
-          </div>
+          </div> :<div>
+            <h1 className="text-3xl font-bold text-slate-900">
+              Edit Address
+            </h1>
+            <p className="mt-2 text-sm text-slate-500">
+              Update your shipping details.
+            </p>
+          </div>} 
+         
         </div>
 
         <form onSubmit={handleSubmit(onSaveAddressHandler)} className="space-y-6">
@@ -58,7 +80,7 @@ const AddAddressForm = ({address , setOpenAddressModal}) => {
               register={register}
               required={true}
               message="Building name is required"
-              placeholder="Gali no 1"
+              placeholder="Highrise Apartments"
             />
             <InputField
               label="City"
