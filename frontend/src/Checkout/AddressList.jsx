@@ -10,7 +10,6 @@ const AddressList=({addresses,setSelectedAddress,setOpenAddressModal})=>{
      const onEditButtonHandler=(addresses)=>{
         setSelectedAddress(addresses)
         setOpenAddressModal(true)
-
     }
     const onDeleteButtonHandler=(addresses)=>{
         setSelectedAddress(addresses)
@@ -61,7 +60,7 @@ const AddressList=({addresses,setSelectedAddress,setOpenAddressModal})=>{
                          <div className="flex justify-end gap-2">
                              <button
                                  type="button"
-                                 onClick={(event)=>{ event.stopPropagation(); onEditButtonHandler(address); }}
+                                 onClick={(event)=>{ onEditButtonHandler(address); }}
                                  className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-600 transition hover:border-slate-300 hover:bg-slate-900 hover:text-white"
                              >
                                  <FaEdit size={18}/>
