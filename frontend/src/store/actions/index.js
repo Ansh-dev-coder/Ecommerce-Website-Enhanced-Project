@@ -192,9 +192,12 @@ export const getUserAddress = ()=>async(dispatch,getState)=>{
         dispatch({type : "IS_ERROR",
             payload : error?.response?.data?.message || "Failed to Fetch User Addresses"
         })
-        
-
     }
-    
+}
 
+export const selectUserCheckoutAddress=(address)=>{
+    return{
+        type: "SELECT_CHECKOUT_ADDRESS",
+        payload : address,
+    }
 }
