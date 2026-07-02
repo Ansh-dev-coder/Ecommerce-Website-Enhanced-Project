@@ -4,17 +4,23 @@ import { useState } from "react";
 import AddressInfoModal from "./AddressInfoModal";
 import AddAddressForm from "./AddAddressForm";
 import AddressList from "./AddressList"
-import { useSelector } from "react-redux";
+import {useSelector, useDispatch } from "react-redux";
+import DeleteModal from "./DeleteModal";
+import toast from "react-hot-toast";
+import {deleteUserAddress} from "../store/actions"
 
 const AddressInfo=({address})=>{
     const [openAddressModal,setOpenAddressModal]=useState(false)
+    const [openDeleteModal,setOpenDeleteModal]=useState(false)
     const [selectedAddress,setSelectedAddress]=useState("")
-
+    const dispatch=useDispatch()
     const addNewAddressHandler=()=>{
         setSelectedAddress("")
             setOpenAddressModal(true)
-        
+    }
+    const deleteAddressHandler=()=>{
 
+  dispatch(deleteUserAddress(toast,selectedAddress?.addressId,setOpenDeleteModal))
     }
     const noAddressExist = !address || address===0 ;
     const {isLoading,btnLoader} = useSelector((state)=>state.error)
@@ -45,11 +51,12 @@ const AddressInfo=({address})=>{
                 ):(
                     <>
                 <div className="mt-6">
-                    <p className="text-sm text-slate-600">
+                    <div className="text-sm text-slate-600">
                         <AddressList
                            addresses={address}
                            setSelectedAddress={setSelectedAddress}
-                           setOpenAddressModal={setOpenAddressModal} /></p>
+                           setOpenAddressModal={setOpenAddressModal} 
+                           setOpenDeleteModal={setOpenDeleteModal}/></div>
                 </div>
                 {address.length>0 && ( 
                      <div className="mt-6">
@@ -73,8 +80,15 @@ const AddressInfo=({address})=>{
                 address= {selectedAddress} 
                 setSelectedAddress={setSelectedAddress}
                 setOpenAddressModal={setOpenAddressModal}/>
-
             </AddressInfoModal>
+
+            <DeleteModal
+            open={openDeleteModal}
+            loader={btnLoader}
+            setOpen={setOpenDeleteModal}
+            title="Delete Address"
+            onDeleteHandler={deleteAddressHandler}
+            />
             
         </div>
     )
