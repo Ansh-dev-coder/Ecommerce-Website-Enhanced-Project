@@ -1,10 +1,11 @@
 import { FaBuilding, FaCheckCircle, FaEdit, FaStreetView, FaTrash } from "react-icons/fa";
 import {MdLocationCity,MdPinDrop, MdPublic} from "react-icons/md"
-import { useDispatch } from "react-redux"
+import { useDispatch,useSelector } from "react-redux"
+import { selectUserCheckoutAddress } from "../store/actions"
 
 const AddressList=({addresses,setSelectedAddress,setOpenAddressModal})=>{
     const dispatch=useDispatch();
-    const selectedUserAddress=addresses[0]
+    const {selectedUserCheckoutAddress}=useSelector((state)=>state.auth)
 
      const onEditButtonHandler=(addresses)=>{
         setSelectedAddress(addresses)
@@ -16,7 +17,12 @@ const AddressList=({addresses,setSelectedAddress,setOpenAddressModal})=>{
 
     }
 
-    const handleAddressSelection=(address)=>{}
+    const handleAddressSelection=(addresses)=>{
+
+         dispatch(selectUserCheckoutAddress(addresses))
+    }
+
+   
    
     return (
         <div className="space-y-4">
@@ -24,7 +30,7 @@ const AddressList=({addresses,setSelectedAddress,setOpenAddressModal})=>{
                 <div key={address.addressId}
                      onClick={()=>handleAddressSelection(address)}
                      className={`relative overflow-hidden rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md cursor-pointer ${
-                        selectedUserAddress?.addressId===address.addressId ? "bg-emerald-50 border-emerald-300" : "bg-white"
+                        selectedUserCheckoutAddress?.addressId===address.addressId ? "bg-emerald-50 border-emerald-300" : "bg-white"
                      }`}>
 
                      <div className="flex flex-col gap-4">
@@ -32,7 +38,7 @@ const AddressList=({addresses,setSelectedAddress,setOpenAddressModal})=>{
                              <div className="flex items-center gap-2 text-slate-900">
                                  <FaBuilding size={16} className="text-slate-500"/>
                                  <p className="font-semibold">{address.buildingName}</p>
-                                 {selectedUserAddress?.addressId===address.addressId &&
+                                 {selectedUserCheckoutAddress?.addressId===address.addressId &&
                                      <FaCheckCircle size={18} className="text-emerald-600" /> }
                              </div>
                              <div className="flex items-center gap-2 text-slate-600">
@@ -52,7 +58,6 @@ const AddressList=({addresses,setSelectedAddress,setOpenAddressModal})=>{
                                  <p>{address.country}</p>
                              </div>
                          </div>
-
                          <div className="flex justify-end gap-2">
                              <button
                                  type="button"
