@@ -204,6 +204,30 @@ export const getUserAddress = ()=>async(dispatch,getState)=>{
         })
     }
 }
+export const deleteUserAddress = 
+(toast,addressId,setOpenDeleteModal)=>async(dispatch,getState)=>{
+    try{
+
+        dispatch({type: "IS_FETCHING"})
+        await api.delete(`/addresses/${addressId}`)
+        dispatch({type :  "IS_SUCCESS"})
+        dispatch(getUserAddress())
+        dispatch(clearCheckoutAddress())
+        toast.success("Address Deleted successfully")
+        
+    }catch(error){
+        dispatch({type : "IS_ERROR",
+            payload : error?.response?.data?.message || "Some Error Occured"
+        })
+    }finally{
+        setOpenDeleteModal(false)
+    }
+}
+export const clearCheckoutAddress=()=>{
+    return {
+        type : "REMOVE_CHECKOUT_ADDRESS"
+    }
+}
 
 export const selectUserCheckoutAddress=(address)=>{
     return{
