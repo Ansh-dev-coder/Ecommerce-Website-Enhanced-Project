@@ -48,8 +48,8 @@ const AddressInfo=({address})=>{
                     <p className="text-sm text-slate-600">
                         <AddressList
                            addresses={address}
-                           selectedAddress={setSelectedAddress}
-                           setopenAddressModal={openAddressModal} /></p>
+                           setSelectedAddress={setSelectedAddress}
+                           setOpenAddressModal={setOpenAddressModal} /></p>
                 </div>
                 {address.length>0 && ( 
                      <div className="mt-6">
@@ -70,7 +70,7 @@ const AddressInfo=({address})=>{
             open={openAddressModal}
             setOpen={setOpenAddressModal}>
                 <AddAddressForm  
-                addresses = {selectedAddress} 
+                address= {selectedAddress} 
                 setSelectedAddress={setSelectedAddress}
                 setOpenAddressModal={setOpenAddressModal}/>
 
