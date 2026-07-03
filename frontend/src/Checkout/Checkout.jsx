@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import AddressInfo from "./AddressInfo"
 import { useDispatch, useSelector } from "react-redux"
 import { getUserAddress } from "../store/actions"
+import Skeleton from "../Components/shared/Skeleton"
 
 
 const Checkout = () =>{
@@ -49,9 +50,13 @@ const Checkout = () =>{
                         </Step>
                     ))}
                 </Stepper>
-                <div className="mt-10">
+                {isLoading ? (<div className="lg:w-[80%] mx-auto py-5">
+                    <Skeleton/>
+                </div>) :(
+                    <div className="mt-10">
                    {activeStep=== 0 && <AddressInfo address={address}/>}
-                </div>
+                </div>)}
+                
                 <div className="mt-8 flex items-center justify-between">
                      <Button 
                          variant='outlined'
