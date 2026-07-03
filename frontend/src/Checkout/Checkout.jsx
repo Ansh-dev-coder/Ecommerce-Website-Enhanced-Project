@@ -1,4 +1,4 @@
-import { Step,StepLabel, Stepper } from "@mui/material"
+import { Button, Step,StepLabel, Stepper } from "@mui/material"
 import { useEffect, useState } from "react"
 import AddressInfo from "./AddressInfo"
 import { useDispatch, useSelector } from "react-redux"
@@ -9,9 +9,27 @@ const Checkout = () =>{
 
     const [activeStep,setActiveStep]=useState(0)
     const dispatch=useDispatch()
-    const {address}=useSelector(
+    const {isLoading,errorMessage}=useSelector((state)=>state.error)
+    const {address,selectedUserCheckoutAddress}=useSelector(
         (state)=>
         state.auth)
+
+        const handleBack=()=>{
+            setActiveStep((prevStep)=>prevStep-1)
+        }
+        const handleNext=()=>{
+            if(activeStep===0 && !selectedUserCheckoutAddress){
+                toast.error("Please select an address to proceed")
+                return;
+            }
+            if(activeStep===1 && (!selectedUserCheckoutAddress || !paymentMethod)){
+                toast.error("Please select payment address to proceed further")
+                return;
+            }
+            setActiveStep((prevStep)=>prevStep+1)
+        }
+        const paymentMethod=false
+    
     const steps=[
         "Address" ,
         "Payment Method",
@@ -34,6 +52,50 @@ const Checkout = () =>{
                 <div className="mt-10">
                    {activeStep=== 0 && <AddressInfo address={address}/>}
                 </div>
+                <div className="mt-8 flex items-center justify-between">
+                     <Button 
+                         variant='outlined'
+                         disabled={activeStep===0}
+                         onClick={handleBack}
+                         sx={{
+                            borderRadius: "12px",
+                            px: 4,
+                            py: 1.2,
+                            textTransform: "none",
+                            fontWeight: 600,
+                            borderColor: "#cbd5e1",
+                            color: "#334155",
+                             "&:hover": {
+                               borderColor: "#94a3b8",
+                               backgroundColor: "#f8fafc", 
+                               },
+                               }}>
+                                Back
+                     </Button> 
+                     {activeStep !==steps.Length-1 && (
+                        <button
+                        disabled={
+                            errorMessage || (
+                                (activeStep===0 ? !selectedUserCheckoutAddress 
+                                    : activeStep===1 ? !paymentMethod 
+                                    : false)
+                            )
+                        }
+                        className={`bg-custom-blue font-semibold px-6 h-10 rounded-md text-white ${
+                            errorMessage ||
+                                (activeStep===0 && !selectedUserCheckoutAddress) ||
+                                (activeStep===1 && !paymentMethod)
+                                ?"opacity-60"
+                                :"" 
+                            
+                        }`}
+                        onClick={handleNext}>
+                            Proceed
+
+                        </button>
+                     )}
+                </div>
+                    
             </div>
         </div>
     )
