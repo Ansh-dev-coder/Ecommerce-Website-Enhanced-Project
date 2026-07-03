@@ -4,6 +4,7 @@ import AddressInfo from "./AddressInfo"
 import { useDispatch, useSelector } from "react-redux"
 import { getUserAddress } from "../store/actions"
 import Skeleton from "../Components/shared/Skeleton"
+import ErrorPage from "../Components/shared/ErrorPage"
 
 
 const Checkout = () =>{
@@ -100,7 +101,8 @@ const Checkout = () =>{
                         </button>
                      )}
                 </div>
-                    
+
+                {errorMessage && <ErrorPage message={errorMessage}/> }    
             </div>
         </div>
     )
