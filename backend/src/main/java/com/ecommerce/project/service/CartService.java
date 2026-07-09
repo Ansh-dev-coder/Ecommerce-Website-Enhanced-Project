@@ -1,6 +1,7 @@
 package com.ecommerce.project.service;
 
 import com.ecommerce.project.payload.CartDTO;
+import com.ecommerce.project.payload.CartItemDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.stylesheets.LinkStyle;
@@ -22,4 +23,6 @@ public interface CartService {
 
 
     void updateProductInCarts(Long cartId, Long productId);
+
+    String createOrUpdateCartWithItems(List<CartItemDTO> cartItemDTO);
 }
