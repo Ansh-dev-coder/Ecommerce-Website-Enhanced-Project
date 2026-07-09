@@ -7,6 +7,7 @@ import com.ecommerce.project.model.CartItem;
 import com.ecommerce.project.model.Product;
 import com.ecommerce.project.model.User;
 import com.ecommerce.project.payload.CartDTO;
+import com.ecommerce.project.payload.CartItemDTO;
 import com.ecommerce.project.payload.ProductDTO;
 import com.ecommerce.project.repositories.CartItemRepository;
 import com.ecommerce.project.repositories.CartRepository;
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -254,7 +254,47 @@ public class CartServiceImpl implements CartService
         cart.setTotalPrice(cartPrice +
                 (cartItem.getProductPrice() * cartItem.getQuantity()));
 
-        CartItem cartItem1=cartItemRepository.save(cartItem);
+        cartItem=cartItemRepository.save(cartItem);
+    }
+
+    @Override
+    public String createOrUpdateCartWithItems(List<CartItemDTO> cartItemDTO) {
+
+        User user=authUtil.loggedInUser();
+       String email= user.getEmail();
+       Cart existingCart=cartRepository.findCartByEmail(email);
+
+        if(existingCart!=null ){
+            cartItemRepository.deleteAllByCartId(existingCart.getCartId());
+        }else {
+             existingCart=new Cart();
+             existingCart.setTotalPrice(0.0);
+             existingCart.setUser(user);
+             existingCart=cartRepository.save(existingCart);
+        }
+
+         Double totalPrice=0.0;
+
+        for(CartItemDTO cartItemDTo : cartItemDTO){
+            Long productId=cartItemDTo.getProductId();
+            Integer quantity=cartItemDTo.getQuantity();
+            Product product=productRepository.findById(productId)
+                    .orElseThrow(()->new ResourceNotFoundException("product","productId",productId));
+            //product.setQuantity(product.getQuantity()-quantity);
+            totalPrice+=product.getSpecialPrice()*quantity;
+
+          CartItem cartItem=new CartItem();
+          cartItem.setProduct(product);
+          cartItem.setQuantity(quantity);
+          cartItem.setCart(existingCart);
+          cartItem.setProductPrice(product.getSpecialPrice());
+          cartItem.setDiscount(product.getDiscount());
+          cartItemRepository.save(cartItem);
+        }
+
+        existingCart.setTotalPrice(totalPrice);
+        cartRepository.save(existingCart);
+        return "Cart created or updated with the new items successfully";
     }
 
 
