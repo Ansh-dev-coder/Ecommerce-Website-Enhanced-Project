@@ -242,3 +242,35 @@ export const addPaymentMethod=(method)=>{
         payload : method,
     }
 }
+
+export const createUserCart=(sendCartItems)=>async(dispatch,getState)=>{
+    try{
+        dispatch({type : "IS_FETCHING"})
+        await api.post("/cart/create",sendCartItems)
+        await dispatch(getUserCart())
+
+    }catch(error){
+        dispatch({type : "IS_ERROR",
+            payload : error?.response?.data?.message || "Failed to create cart Items",
+              })
+    }
+}
+
+export const getUserCart=()=>async(dispatch,getState)=>{
+    try {
+        dispatch({type : "IS_FETCHING"})
+        const {data}=await api.get("/carts/users/cart")
+        dispatch ({
+            type : "GET_USER_CART_PRODUCTS",
+            payload : data.products,
+            totalPrice : data.totalPrice,
+            cartId: data.cartId
+        })
+        localStorage.setItem("cartItems",JSON.stringify(getState().carts.cart))
+        dispatch({type : "IS_SUCCESS"})
+    }catch(error){
+        dispatch({type : "IS_ERROR",
+            payload : error?.response?.data?.message || "Failed to Fetch cart items",
+        })
+    }
+}
