@@ -1,13 +1,28 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {useSelector} from 'react-redux'
 import {FormControl,FormControlLabel,RadioGroup,Radio} from '@mui/material'
 import {useDispatch} from 'react-redux'
 import {addPaymentMethod} from '../store/actions'
+import { createUserCart } from '../store/actions'
 
 const PaymentMethod=()=>{
     const dispatch=useDispatch()
 
     const {paymentMethod}=useSelector((state)=>state.payment)
+    const {cart,cartId}=useSelector((state)=>state.carts);
+    const {isLoading,errorMessage}=useSelector((state)=>state.error)
+
+    useEffect(()=>{
+        if(cart.length > 0 && !cartId && !errorMessage){
+            const sendCartItems=cart.map((item)=>{
+                return {
+                    productId : item.productId,
+                    quantity : item.quantity
+                }
+            })
+            dispatch(createUserCart(sendCartItems))
+        }
+    },[dispatch,cartId])
 
 const paymentMethodHandler=(method)=>{
     dispatch(addPaymentMethod(method))
