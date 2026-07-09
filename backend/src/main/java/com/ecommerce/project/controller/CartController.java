@@ -4,6 +4,7 @@ import com.ecommerce.project.exceptions.ApiException;
 import com.ecommerce.project.exceptions.ResourceNotFoundException;
 import com.ecommerce.project.model.Cart;
 import com.ecommerce.project.payload.CartDTO;
+import com.ecommerce.project.payload.CartItemDTO;
 import com.ecommerce.project.repositories.CartRepository;
 import com.ecommerce.project.service.CartService;
 import com.ecommerce.project.util.AuthUtil;
@@ -32,6 +33,11 @@ public class CartController {
     @Autowired
     private CartRepository cartRepository;
 
+    @PostMapping("cart/create")
+    public ResponseEntity<String> createOrUpdateCartWithItems(@RequestBody List<CartItemDTO> cartItemDTO){
+        String response= cartService.createOrUpdateCartWithItems(cartItemDTO);
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
+    }
 
     @Tag(name = "Cart APIs",description = "APIs for managing Cart")
     @Operation(summary = "Adding product to cart",description = "Api to adding the product to the cart")
