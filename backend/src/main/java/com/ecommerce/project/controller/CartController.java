@@ -72,8 +72,7 @@ public class CartController {
     @ApiResponses({@ApiResponse(responseCode = "200",description = "Found  Successfully"),
             @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
             @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
-
-    @GetMapping("/carts/users/carts")
+    @GetMapping("/carts/users/cart")
     public ResponseEntity<CartDTO> getCartById()
     {
         String emailId=authUtil.loggedInEmail();
