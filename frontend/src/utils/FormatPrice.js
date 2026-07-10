@@ -6,3 +6,7 @@ export const FormatPrice=(amount)=>{
     }).format(amount)
 
 }
+
+export const formatPriceCalculation = (quantity,price)=>{
+    return (Number(quantity) * Number(price)).toFixed(2)
+}
