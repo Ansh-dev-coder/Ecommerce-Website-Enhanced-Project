@@ -1,3 +1,5 @@
+import { formatPriceCalculation } from "../utils/FormatPrice";
+
 const OrderSummary = ({ totalPrice, cart, address, paymentMethod }) => {
   return (
     <div className="flex flex-col lg:flex-row gap-6 p-4">
@@ -51,7 +53,7 @@ const OrderSummary = ({ totalPrice, cart, address, paymentMethod }) => {
                   </p>
 
                   <p className="font-medium text-slate-800">
-                    ₹{item?.quantity * item?.specialPrice}
+                    ₹{formatPriceCalculation(item?.quantity,item?.specialPrice)}
                   </p>
                 </div>
               </div>
@@ -67,7 +69,7 @@ const OrderSummary = ({ totalPrice, cart, address, paymentMethod }) => {
 
           <div className="flex justify-between mb-3">
             <span>Products</span>
-            <span>₹{totalPrice}</span>
+            <span>₹{formatPriceCalculation(totalPrice,1)}</span>
           </div>
 
           <div className="flex justify-between mb-3">
@@ -77,7 +79,7 @@ const OrderSummary = ({ totalPrice, cart, address, paymentMethod }) => {
 
           <div className="border-t pt-3 flex justify-between font-bold text-lg">
             <span>Subtotal</span>
-            <span>₹{totalPrice}</span>
+            <span>₹{formatPriceCalculation(totalPrice,1)}</span>
           </div>
         </div>
       </aside>
