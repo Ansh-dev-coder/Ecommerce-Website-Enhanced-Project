@@ -7,6 +7,8 @@ import Skeleton from "../Components/shared/Skeleton"
 import ErrorPage from "../Components/shared/ErrorPage"
 import PaymentMethod from "./PaymentMethod"
 import OrderSummary from "./OrderSummary"
+import StripePayment from "./StripePayment"
+import PaypalPayment from "./PaypalPayment"
 
 
 const Checkout = () =>{
@@ -64,6 +66,12 @@ const Checkout = () =>{
                                                     cart={cart}
                                                     address={selectedUserCheckoutAddress}
                                                     paymentMethod={paymentMethod} />}
+                    {activeStep === 3 && 
+                    <>
+                    {paymentMethod === "Stripe" ? 
+                    (<StripePayment/>)
+                    :(<PaypalPayment/>)}
+                    </> }
                 </div>)}
                 
                 <div className="mt-8 flex items-center justify-between">
