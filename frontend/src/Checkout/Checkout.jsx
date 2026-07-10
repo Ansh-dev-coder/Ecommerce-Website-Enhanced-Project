@@ -6,6 +6,7 @@ import { getUserAddress } from "../store/actions"
 import Skeleton from "../Components/shared/Skeleton"
 import ErrorPage from "../Components/shared/ErrorPage"
 import PaymentMethod from "./PaymentMethod"
+import OrderSummary from "./OrderSummary"
 
 
 const Checkout = () =>{
@@ -13,6 +14,7 @@ const Checkout = () =>{
     const [activeStep,setActiveStep]=useState(0)
     const dispatch=useDispatch()
     const {isLoading,errorMessage}=useSelector((state)=>state.error)
+    const {cart,totalPrice}=useSelector((state)=>state.carts)
     const {address,selectedUserCheckoutAddress}=useSelector(
         (state)=>
         state.auth)
@@ -31,7 +33,7 @@ const Checkout = () =>{
             }
             setActiveStep((prevStep)=>prevStep+1)
         }
-        const paymentMethod=false
+        const{ paymentMethod}=useSelector((state)=>state.payment)
     
     const steps=[
         "Address" ,
@@ -57,9 +59,11 @@ const Checkout = () =>{
                 </div>) :(
                     <div className="mt-10">
                    {activeStep=== 0 && <AddressInfo address={address}/>}
-                   {activeStep=== 1 &&  <PaymentMethod/>
-                   }
-
+                   {activeStep=== 1 &&  <PaymentMethod/>}
+                   {activeStep===2 && <OrderSummary totalPrice={totalPrice}
+                                                    cart={cart}
+                                                    address={selectedUserCheckoutAddress}
+                                                    paymentMethod={paymentMethod} />}
                 </div>)}
                 
                 <div className="mt-8 flex items-center justify-between">
