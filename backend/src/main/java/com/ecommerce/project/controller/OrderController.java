@@ -2,8 +2,11 @@ package com.ecommerce.project.controller;
 
 import com.ecommerce.project.payload.OrderDTO;
 import com.ecommerce.project.payload.OrderRequestDTO;
+import com.ecommerce.project.payload.StripePaymentDTO;
 import com.ecommerce.project.service.OrderService;
+import com.ecommerce.project.service.StripeService;
 import com.ecommerce.project.util.AuthUtil;
+import com.stripe.model.PaymentIntent;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,6 +26,8 @@ public class OrderController {
 
     @Autowired
     private AuthUtil authUtil;
+    @Autowired
+    private StripeService stripeService;
 
 
 
@@ -44,5 +49,14 @@ public class OrderController {
                 orderRequestDTO.getPgStatus(),
                 orderRequestDTO.getPgResponseMessage());
        return new ResponseEntity<>(orderDTO, HttpStatus.CREATED);
+    }
+
+
+    @PostMapping("/order/stripe-client-secret")
+    public ResponseEntity<String> createStripeClientSecret(@RequestBody StripePaymentDTO stripePaymentDto){
+
+        PaymentIntent paymentIntent=stripeService.paymentIntent(stripePaymentDto);
+
+        return new ResponseEntity<>("",HttpStatus.CREATED);
     }
 }
