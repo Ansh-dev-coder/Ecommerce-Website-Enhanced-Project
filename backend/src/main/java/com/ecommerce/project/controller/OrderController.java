@@ -6,6 +6,7 @@ import com.ecommerce.project.payload.StripePaymentDTO;
 import com.ecommerce.project.service.OrderService;
 import com.ecommerce.project.service.StripeService;
 import com.ecommerce.project.util.AuthUtil;
+import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -53,10 +54,8 @@ public class OrderController {
 
 
     @PostMapping("/order/stripe-client-secret")
-    public ResponseEntity<String> createStripeClientSecret(@RequestBody StripePaymentDTO stripePaymentDto){
-
-        PaymentIntent paymentIntent=stripeService.paymentIntent(stripePaymentDto);
-
-        return new ResponseEntity<>("",HttpStatus.CREATED);
+    public ResponseEntity<String> createStripeClientSecret(@RequestBody StripePaymentDTO stripePaymentDto) throws StripeException {
+            PaymentIntent paymentIntent=stripeService.paymentIntent(stripePaymentDto);
+        return new ResponseEntity<>(paymentIntent.getClientSecret(),HttpStatus.CREATED);
     }
 }
