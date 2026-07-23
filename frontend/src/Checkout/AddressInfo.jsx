@@ -4,93 +4,91 @@ import { useState } from "react";
 import AddressInfoModal from "./AddressInfoModal";
 import AddAddressForm from "./AddAddressForm";
 import AddressList from "./AddressList"
-import {useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import DeleteModal from "./DeleteModal";
 import toast from "react-hot-toast";
-import {deleteUserAddress} from "../store/actions"
+import { deleteUserAddress } from "../store/actions"
 
-const AddressInfo=({address})=>{
-    const [openAddressModal,setOpenAddressModal]=useState(false)
-    const [openDeleteModal,setOpenDeleteModal]=useState(false)
-    const [selectedAddress,setSelectedAddress]=useState("")
-    const dispatch=useDispatch()
-    const addNewAddressHandler=()=>{
+const AddressInfo = ({ address }) => {
+    const [openAddressModal, setOpenAddressModal] = useState(false)
+    const [openDeleteModal, setOpenDeleteModal] = useState(false)
+    const [selectedAddress, setSelectedAddress] = useState("")
+    const dispatch = useDispatch()
+    const addNewAddressHandler = () => {
         setSelectedAddress("")
-            setOpenAddressModal(true)
+        setOpenAddressModal(true)
     }
-    const deleteAddressHandler=()=>{
+    const deleteAddressHandler = () => {
+        dispatch(deleteUserAddress(toast, selectedAddress?.addressId, setOpenDeleteModal))
+    }
+    const noAddressExist = !address || address === 0
+    const { isLoading, btnLoader } = useSelector((state) => state.error)
 
-  dispatch(deleteUserAddress(toast,selectedAddress?.addressId,setOpenDeleteModal))
-    }
-    const noAddressExist = !address || address===0 ;
-    const {isLoading,btnLoader} = useSelector((state)=>state.error)
     return (
-        <div className="min-h-[70vh] bg-slate-50 py-10 px-4">
-            {noAddressExist ?(
-                <div className="mx-auto max-w-3xl rounded-[32px] border border-slate-200 bg-white p-8 text-center shadow-sm">
-                    <div className="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-700">
-                        <FaAddressBook size={58}/>
+        <div className="min-h-[70vh] rounded-[32px] border border-slate-200/80 bg-slate-50/70 p-4 sm:p-6 lg:p-8">
+            {noAddressExist ? (
+                <div className="checkout-card mx-auto max-w-3xl p-8 text-center">
+                    <div className="mx-auto mb-5 inline-flex h-16 w-16 items-center justify-center rounded-full bg-sky-100 text-sky-700">
+                        <FaAddressBook size={56} />
                     </div>
-                    <h1 className="text-2xl font-semibold text-slate-900">No Address yet...</h1>
-                    <p className="mt-3 text-sm text-slate-600">Please add the address to continue the purchase</p>
+                    <h1 className="text-2xl font-semibold text-slate-900">No address yet</h1>
+                    <p className="mt-3 text-sm text-slate-600">Add your delivery details so checkout can continue smoothly.</p>
                     <button
-                      onClick={addNewAddressHandler}
-                      className="mt-6 inline-flex items-center justify-center rounded-2xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400"
+                        onClick={addNewAddressHandler}
+                        className="checkout-button mt-6"
                     >
-                      Add Address
+                        Add Address
                     </button>
                 </div>
-            ):(
-                <div className="mx-auto max-w-3xl rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
-                <h1 className="text-2xl font-semibold text-slate-900">
-                    Select Address
-                </h1>
-                {isLoading ? (
-                    <div className="mt-6">
-                 <Skeleton/></div>   
-                ):(
-                    <>
-                <div className="mt-6">
-                    <div className="text-sm text-slate-600">
-                        <AddressList
-                           addresses={address}
-                           setSelectedAddress={setSelectedAddress}
-                           setOpenAddressModal={setOpenAddressModal} 
-                           setOpenDeleteModal={setOpenDeleteModal}/></div>
-                </div>
-                {address.length>0 && ( 
-                     <div className="mt-6">
+            ) : (
+                <div className="checkout-card mx-auto max-w-4xl p-6 sm:p-8">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <h1 className="text-2xl font-semibold text-slate-900">Select a delivery address</h1>
+                            <p className="mt-2 text-sm text-slate-600">Choose the address you want to ship your order to.</p>
+                        </div>
                         <button
-                        onClick={addNewAddressHandler}
-                        className="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400"
+                            onClick={addNewAddressHandler}
+                            className="checkout-button-secondary w-full sm:w-auto"
                         >
                             Add More
                         </button>
-                     </div>
-                )}
-                </>
-            )}
+                    </div>
 
+                    {isLoading ? (
+                        <div className="mt-6">
+                            <Skeleton />
+                        </div>
+                    ) : (
+                        <div className="mt-6">
+                            <AddressList
+                                addresses={address}
+                                setSelectedAddress={setSelectedAddress}
+                                setOpenAddressModal={setOpenAddressModal}
+                                setOpenDeleteModal={setOpenDeleteModal}
+                            />
+                        </div>
+                    )}
                 </div>
             )}
-            <AddressInfoModal
-            open={openAddressModal}
-            setOpen={setOpenAddressModal}>
-                <AddAddressForm  
-                address= {selectedAddress} 
-                setSelectedAddress={setSelectedAddress}
-                setOpenAddressModal={setOpenAddressModal}/>
+
+            <AddressInfoModal open={openAddressModal} setOpen={setOpenAddressModal}>
+                <AddAddressForm
+                    address={selectedAddress}
+                    setSelectedAddress={setSelectedAddress}
+                    setOpenAddressModal={setOpenAddressModal}
+                />
             </AddressInfoModal>
 
             <DeleteModal
-            open={openDeleteModal}
-            loader={btnLoader}
-            setOpen={setOpenDeleteModal}
-            title="Delete Address"
-            onDeleteHandler={deleteAddressHandler}
+                open={openDeleteModal}
+                loader={btnLoader}
+                setOpen={setOpenDeleteModal}
+                title="Delete Address"
+                onDeleteHandler={deleteAddressHandler}
             />
-            
         </div>
     )
 }
+
 export default AddressInfo
