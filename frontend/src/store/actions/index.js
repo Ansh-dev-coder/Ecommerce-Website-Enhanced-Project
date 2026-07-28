@@ -231,6 +231,7 @@ export const clearCheckoutAddress=()=>{
 }
 
 export const selectUserCheckoutAddress=(address)=>{
+    localStorage.setItem("CHECKOUT_ADDRESS",JSON.stringify(address))
     return{
         type: "SELECT_CHECKOUT_ADDRESS",
         payload : address,
@@ -292,3 +293,22 @@ export const createStripePaymentSecret = (totalPrice)=>async(dispatch,getState)=
     }
 
 } 
+
+export const stripePaymentConfirmation=(setErrorMessage , setLoading,toast,sendData)=> async(dispatch,getState)=>{
+
+    try{
+        const response = await api.post(`order/users/payments/Online`,sendData)
+        if(response?.data){
+            localStorage.removeItem("cartItems")
+            localStorage.removeItem("client-secret")
+            dispatch({type:"REMOVE_CLIENT_SECRET_ADDRESS"})
+            dispatch({type:"CLEAR_CART"})
+            toast.success("Order Accepted")
+        }else{
+            setErrorMessage("Payment Failed. Please try again")
+        }
+    }catch(error){
+    console.error("Stripe payment confirmation failed", error)
+    setErrorMessage(error?.response?.data?.message || "Payment failed. Please Try again")
+    }
+}
