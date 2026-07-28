@@ -39,6 +39,10 @@ export const CartReducer=(state=intialState,action)=>{
                 totalPrice : action.totalPrice,
                 cartId : action.cartId
             }
+        case  "CLEAR_CART" : 
+            return{
+                cart :[],totalPrice: 0,cartId : null
+            }    
             default:
                 break;      
         }
