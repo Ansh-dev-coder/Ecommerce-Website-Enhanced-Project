@@ -18,13 +18,13 @@ const PaymentForm = ({ clientSecret, totalPrice }) => {
         const {error} =await stripe.confirmPayment({
             elements,
             clientSecret,
-            confirmPayment : {
+            confirmParams : {
                 return_url : `${import.meta.env.VITE_FRONTEND_URL}/order-confirm`
             }
         })
         if(error){
             setErrorMessage(error.message)
-            return false;
+            
         }
     }
 
