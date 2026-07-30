@@ -5,6 +5,8 @@ import { loadStripe } from '@stripe/stripe-js'
 import { Elements } from '@stripe/react-stripe-js'
 import PaymentForm from './PaymentForm'
 import { createStripePaymentSecret } from '../store/actions'
+import { Description } from '@headlessui/react'
+
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 
@@ -14,10 +16,22 @@ const StripePayment = () => {
   const { clientSecret } = useSelector((state) => state.auth)
   const { totalPrice } = useSelector((state) => state.carts)
   const { isLoading } = useSelector((state) => state.error)
+  const {user,selectedUserCheckoutAddress}=useSelector((state)=> state.auth)
 
   useEffect(() => {
     if (!clientSecret) {
-      dispatch(createStripePaymentSecret(totalPrice))
+      const sendData={
+        amount: Number(totalPrice)*100,
+        currency:"USD",
+        email:user.email,
+        name:`${user.username}`,
+        address:selectedUserCheckoutAddress,
+        description: `Order for ${user.email}`,
+        metadata : {
+          test :"1"
+        }
+      }
+      dispatch(createStripePaymentSecret(sendData))
     }
   }, [clientSecret, dispatch, totalPrice])
 
