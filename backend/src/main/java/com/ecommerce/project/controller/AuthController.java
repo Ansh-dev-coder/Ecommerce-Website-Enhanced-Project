@@ -76,7 +76,7 @@ public class AuthController {
     ResponseCookie jwtCookie=jwtUtils.generateJwtCookie(userDetail);
     List<String> roles=userDetail.getAuthorities().stream().map(item->item.getAuthority()).toList();
 //    UserInfoResponse response=new UserInfoResponse(userDetail.getId(), jwtToken, userDetail.getUsername(), roles);
-    UserInfoResponse response=new UserInfoResponse(userDetail.getId(),jwtCookie.toString(),userDetail.getUsername(),roles);
+    UserInfoResponse response=new UserInfoResponse(userDetail.getId(),jwtCookie.toString(),userDetail.getUsername(),userDetail.getEmail(),roles);
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,jwtCookie.toString()).body(response);
 }
 
@@ -167,7 +167,7 @@ public ResponseEntity<?> register(@Valid @RequestBody SignupRequest signupReques
 
        List<String> roles=userDetail.getAuthorities().stream().map(auth->auth.getAuthority()).toList();
 
-       UserInfoResponse userInfoResponse=new UserInfoResponse(userDetail.getId(),jwtCookie.toString(),userDetail.getUsername(),roles);
+       UserInfoResponse userInfoResponse=new UserInfoResponse(userDetail.getId(),jwtCookie.toString(),userDetail.getUsername(),userDetail.getEmail(),roles);
        return ResponseEntity.ok(userInfoResponse);
    }
 
