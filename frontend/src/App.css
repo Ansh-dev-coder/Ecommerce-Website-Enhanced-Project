@@ -197,3 +197,56 @@
 .checkout-stepper .MuiStepIcon-root.Mui-completed {
   color: #16a34a;
 }
+
+.payment-confirmation-shell {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, #f8fbff 0%, #f8fafc 45%, #eef6ff 100%);
+}
+
+.payment-confirmation-card {
+  width: min(100%, 560px);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 28px;
+  box-shadow: 0 24px 60px -28px rgba(15, 23, 42, 0.2);
+  padding: 2.25rem;
+  text-align: center;
+}
+
+.payment-confirmation-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  color: #16a34a;
+  margin-bottom: 1rem;
+  box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.15);
+}
+
+.payment-confirmation-card h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1.8rem;
+  color: #0f172a;
+}
+
+.payment-confirmation-card p {
+  margin: 0 0 1rem;
+  color: #475569;
+  line-height: 1.7;
+}
+
+.payment-confirmation-alert {
+  margin-top: 0.75rem;
+  text-align: left;
+}
+
+.payment-confirmation-loading {
+  width: 100%;
+}
