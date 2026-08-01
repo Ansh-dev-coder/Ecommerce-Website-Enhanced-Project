@@ -1,3 +1,6 @@
+import { FaBoxOpen, FaHome, FaStore, FaThList } from "react-icons/fa"
+import { href } from "react-router-dom"
+
 export const bannerList=[
     {
     id: 1,
@@ -20,4 +23,25 @@ export const bannerList=[
     subtitle: "Kids' Clothing",
     description: "Bright and fun styles for kids, up to 20% off",
 }
+]
+export const adminNavigation=[
+  {name : "Dashboard",
+    href : "/admin" ,
+     icon :FaHome , 
+     current : true },  
+     {
+      name :"Product",
+      href : "/admin/prpducts",
+      icon : FaBoxOpen,
+     },
+     {
+      name : "Categories",
+      href : "/admin/categories",
+      icon : FaThList
+     },
+     {
+      name : "Sellers",
+      href: "/admin/sellers",
+      icon : FaStore
+     }
 ]
