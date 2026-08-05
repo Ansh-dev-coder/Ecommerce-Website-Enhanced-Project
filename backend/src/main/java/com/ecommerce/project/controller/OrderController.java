@@ -1,7 +1,9 @@
 package com.ecommerce.project.controller;
 
+import com.ecommerce.project.config.AppConst;
 import com.ecommerce.project.payload.OrderDTO;
 import com.ecommerce.project.payload.OrderRequestDTO;
+import com.ecommerce.project.payload.OrderResponse;
 import com.ecommerce.project.payload.StripePaymentDTO;
 import com.ecommerce.project.service.OrderService;
 import com.ecommerce.project.service.StripeService;
@@ -58,5 +60,18 @@ public class OrderController {
         System.out.println("Stripe Payment Dto Data" + stripePaymentDto);
             PaymentIntent paymentIntent=stripeService.paymentIntent(stripePaymentDto);
         return new ResponseEntity<>(paymentIntent.getClientSecret(),HttpStatus.CREATED);
+    }
+
+    @GetMapping("/admin/orders")
+    public ResponseEntity<OrderResponse> getAllOrders(
+            @RequestParam(name = "pageNumber",defaultValue = AppConst.PAGE_NUMBER,required = false)Integer pageNumber,
+            @RequestParam(name = "pageSize",defaultValue =AppConst.PAGE_SIZE,required = false)Integer pageSize,
+            @RequestParam(name = "sortBy",defaultValue = AppConst.SORT_ORDER_BY,required = false)String sortBy,
+            @RequestParam(name = "sortOrder",defaultValue = AppConst.SORT_DIR,required = false)String sortOrder)
+    {
+
+         OrderResponse orderResponse=orderService.getAllOrders(pageNumber,pageSize,sortBy,sortOrder);
+         return new ResponseEntity<>(orderResponse,HttpStatus.OK);
+
     }
 }
