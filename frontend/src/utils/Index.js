@@ -1,4 +1,5 @@
-import { FaBoxOpen, FaHome, FaStore, FaThList } from "react-icons/fa"
+import { FaBoxOpen, FaHome, FaShoppingCart, FaStore, FaThList } from "react-icons/fa"
+import { href } from "react-router-dom"
 
 export const bannerList=[
     {
@@ -27,7 +28,12 @@ export const adminNavigation=[
   {name : "Dashboard",
     href : "/admin" ,
      icon :FaHome , 
-     current : true },  
+     current : true }, 
+     {
+      name : "Orders",
+      href : "/admin/order",
+      icon : FaShoppingCart
+     } ,
      {
       name :"Product",
       href : "/admin/products",
