@@ -47,6 +47,7 @@ function App() {
           <Route path='/' element={<PrivateRoute  adminOnly />}>
             <Route path='/admin' element={<AdminLayout/>}>
               <Route path='' element={<Dashboard/>}/>
+              <Route path='order'  element={<Orders/>} />
               <Route  path='products' element={<AdminProducts/>} />
               <Route path='categories' element={<Category/>} />
               <Route  path='sellers' element={<Seller/>} />
