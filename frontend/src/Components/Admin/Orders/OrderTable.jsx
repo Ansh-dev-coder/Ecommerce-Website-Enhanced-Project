@@ -1,10 +1,15 @@
 import { DataGrid } from '@mui/x-data-grid'
-import React from 'react'
+import React, { useState } from 'react'
 import { FaEdit } from 'react-icons/fa';
 import { columns } from '../../helper/tableColumn';
+import { useLocation, useSearchParams } from 'react-router-dom';
 
 
 const OrderTable = ({adminOrders,pagination}) => {
+    const [currentPage,setCurrentPage]=useState(pagination?.pageNumber + 1 || 1)
+    const [searchParams]=useSearchParams()
+    const params=new URLSearchParams(searchParams)
+    const pathname=useLocation().pathname
    
 const tableRecords=adminOrders?.map((item)=>{
     return {
@@ -15,6 +20,13 @@ const tableRecords=adminOrders?.map((item)=>{
         date : item.date
     }
 })
+const handlePaginationChange =(paginationModel)=>{
+    const  page=paginationModel.page + 1
+    setCurrentPage(page);
+    params.set("page",page.toString())
+    Navigate(`${pathname}?${params}`)
+
+}
   return (
     <div>
         <h1>
@@ -24,13 +36,27 @@ const tableRecords=adminOrders?.map((item)=>{
             <DataGrid  
             rows={tableRecords}
             columns={columns}
+            paginationMode='server'
+            rowCount={pagination?.totalElements || 0}
             initialState={{
                 pagination : {
                     paginationModel:{
-                        pageSize : 5
+                        pageSize : pagination?.pageSize || 10,
+                        page : currentPage -1
                     }
                 }
             }}
+            onPaginationModelChange={handlePaginationChange}
+              pageSizeOptions={[pagination?.pageSize || 10]}
+        checkboxSelection
+        disableRowSelectionOnClick
+        disableColumnResize
+        pagination
+        paginationOptions={{
+            showFirstButton : true,
+            showLastButtong : true,
+            hideNextButtong : currentPage===pagination?.totalPages,
+        }}
             />
         </div>
     </div>
