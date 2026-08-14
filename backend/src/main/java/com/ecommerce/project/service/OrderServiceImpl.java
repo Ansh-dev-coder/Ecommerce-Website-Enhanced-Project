@@ -68,7 +68,7 @@ public class OrderServiceImpl implements OrderService {
         order.setAddress(address);
         order.setTotalPrice(cart.getTotalPrice());
         order.setOrderDate(LocalDate.now());
-        order.setOrderStatus("Order Accepted");
+        order.setOrderStatus("Accepted");
         Payment payment=new Payment(paymentMethod,pgPaymentId,pgStatus,pgResponseMessage,pgName);
         payment.setOrder(order);
         payment=  paymentRepository.save(payment);
