@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { FaSpinner } from 'react-icons/fa'
+import { useDispatch } from 'react-redux'
 import Spinners from '../../shared/Spinners'
+import { updateOrderStatus } from '../../../store/actions'
 
 const ORDER_STATUS_OPTIONS = [
   'PENDING',
+  'ACCEPTED',
   'PROCESSING',
   'SHIPPED',
   'DELIVERED',
@@ -12,6 +14,7 @@ const ORDER_STATUS_OPTIONS = [
 ]
 
 const UpdateOrderForm = ({ setOpen, selectedId, selectedItem, loader, setLoader }) => {
+  const dispatch = useDispatch()
   const [status, setStatus] = useState(selectedItem?.status || 'PENDING')
   const [notes, setNotes] = useState('')
 
@@ -29,22 +32,7 @@ const UpdateOrderForm = ({ setOpen, selectedId, selectedItem, loader, setLoader 
       return
     }
 
-    setLoader(true)
-
-    try {
-      console.log('Updating order status:', {
-        orderId: selectedId,
-        status,
-        notes,
-      })
-
-      toast.success('Order status updated successfully')
-      setOpen(false)
-    } catch (error) {
-      toast.error(error?.message || 'Failed to update order status')
-    } finally {
-      setLoader(false)
-    }
+    dispatch(updateOrderStatus(selectedId, status, notes, toast, setOpen, setLoader))
   }
 
   return (
@@ -109,11 +97,14 @@ const UpdateOrderForm = ({ setOpen, selectedId, selectedItem, loader, setLoader 
             disabled={loader}
             className='rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300'
           >
-            {loader ?
-             <div>
-                <Spinners  /> Loading...
-            </div> : 
-            'Save Changes'}
+            {loader ? (
+              <span className='inline-flex items-center gap-2'>
+                <Spinners />
+                <span>Saving...</span>
+              </span>
+            ) : (
+              'Save Changes'
+            )}
           </button>
         </div>
       </form>
