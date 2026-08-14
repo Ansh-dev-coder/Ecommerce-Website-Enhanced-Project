@@ -352,3 +352,30 @@ export const getOrdersForDashboards=(queryString)=>async (dispatch)=>{
         })
     }
 }
+
+export const updateOrderStatus = (orderId, status, notes, toast, setOpen, setLoader) => async (dispatch) => {
+    try {
+        setLoader?.(true)
+
+        const { data } = await api.put(`/admin/orders/${orderId}/status`, {
+           status: status,
+                 })
+
+        dispatch({
+            type: "UPDATE_ADMIN_ORDER_STATUS",
+            payload: {
+                orderId,
+                status,
+                notes,
+            },
+        })
+
+        dispatch(getOrdersForDashboards("page=0&size=10"))
+        toast.success(data?.message || "Order status updated successfully")
+        setOpen?.(false)
+    } catch (error) {
+        toast.error(error?.response?.data?.message || "Failed to update order status")
+    } finally {
+        setLoader?.(false)
+    }
+}
