@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -130,5 +131,13 @@ public class OrderServiceImpl implements OrderService {
       orderResponse.setTotalPages(pageOrders.getTotalPages());
       orderResponse.setLastPage(pageOrders.isLast());
         return orderResponse;
+    }
+
+    @Override
+    public OrderDTO updateOrder(Long orderId, String status) {
+        Order order=orderRepository.findById(orderId).orElseThrow(()->new ResourceNotFoundException("Order","orderID",orderId));
+        order.setOrderStatus(status);
+        orderRepository.save(order);
+        return mapper.map(order,OrderDTO.class);
     }
 }
