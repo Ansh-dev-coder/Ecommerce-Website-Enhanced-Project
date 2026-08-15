@@ -1,5 +1,5 @@
  
- import { FaEdit } from 'react-icons/fa';
+ import { FaEdit, FaTrash, FaEye, FaImage } from 'react-icons/fa';
 
 export const getOrderColumns = (onEditOrder) => [
   {
@@ -76,6 +76,169 @@ export const getOrderColumns = (onEditOrder) => [
         >
           <FaEdit className='mr-2' />
           Edit
+        </button>
+      </div>
+    ),
+  },
+];
+
+export const adminProductTableColumn = (handleEdit,
+  handleDelete,
+  handleImageUpload,
+  handleProductView) => [
+
+  
+
+  {
+    sortable: false,
+    disableColumnMenu: true,
+    field: 'productId',
+    headerName: 'ID',
+    minWidth: 100,
+    headerAlign: 'center',
+    editable: false,
+    headerClassName: 'test-black font-semibold border',
+    cellClassName: 'test-slate-700 font-normal border',
+    renderHeader: () => <span className='text-center'>Product ID</span>,
+  },
+  {
+    sortable: true,
+    field: 'productName',
+    headerName: 'Product Name',
+    minWidth: 180,
+    headerAlign: 'center',
+    editable: false,
+    headerClassName: 'test-black font-semibold border',
+    cellClassName: 'test-slate-700 font-normal border',
+    renderHeader: () => <span className='text-center'>Product Name</span>,
+  },
+  {
+    field: 'description',
+    headerName: 'Description',
+    minWidth: 250,
+    headerAlign: 'center',
+    editable: false,
+    headerClassName: 'test-black font-semibold border',
+    cellClassName: 'test-slate-700 font-normal border',
+    renderHeader: () => <span className='text-center'>Description</span>,
+  },
+  {
+    sortable: true,
+    field: 'price',
+    headerName: 'Price',
+    minWidth: 120,
+    headerAlign: 'center',
+    editable: false,
+    headerClassName: 'test-black font-semibold border',
+    cellClassName: 'test-slate-700 font-normal border',
+    renderHeader: () => <span className='text-center'>Price</span>,
+    renderCell: (params) => <span>₹{params.row.price.toFixed(2)}</span>,
+  },
+  {
+    sortable: true,
+    field: 'discount',
+    headerName: 'Discount',
+    minWidth: 120,
+    headerAlign: 'center',
+    editable: false,
+    headerClassName: 'test-black font-semibold border',
+    cellClassName: 'test-slate-700 font-normal border',
+    renderHeader: () => <span className='text-center'>Discount %</span>,
+    renderCell: (params) => <span>{params.row.discount}%</span>,
+  },
+  {
+    sortable: true,
+    field: 'specialPrice',
+    headerName: 'Special Price',
+    minWidth: 140,
+    headerAlign: 'center',
+    editable: false,
+    headerClassName: 'test-black font-semibold border',
+    cellClassName: 'test-slate-700 font-normal border',
+    renderHeader: () => <span className='text-center'>Special Price</span>,
+    renderCell: (params) => <span className='text-green-600 font-semibold'>₹{params.row.specialPrice.toFixed(2)}</span>,
+  },
+  {
+    sortable: true,
+    field: 'quantity',
+    headerName: 'Quantity',
+    minWidth: 120,
+    headerAlign: 'center',
+    editable: false,
+    headerClassName: 'test-black font-semibold border',
+    cellClassName: 'test-slate-700 font-normal border',
+    renderHeader: () => <span className='text-center'>Quantity</span>,
+    renderCell: (params) => (
+      <span className={params.row.quantity === 0 ? 'text-red-600 font-semibold' : ''}>
+        {params.row.quantity}
+      </span>
+    ),
+  },
+  {
+    sortable: false,
+    field: 'status',
+    headerName: 'Status',
+    minWidth: 140,
+    headerAlign: 'center',
+    editable: false,
+    headerClassName: 'test-black font-semibold border',
+    cellClassName: 'test-slate-700 font-normal border',
+    renderHeader: () => <span className='text-center'>Status</span>,
+    renderCell: (params) => (
+      params.row.quantity === 0 ? (
+        <span className='bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-semibold'>Out of Stock</span>
+      ) : (
+        <span className='bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold'>Active</span>
+      )
+    ),
+  },
+  {
+    sortable: false,
+    field: 'action',
+    headerName: 'Action',
+    minWidth: 350,
+    headerAlign: 'center',
+    editable: false,
+    headerClassName: 'test-black font-semibold border',
+    cellClassName: 'test-slate-700 font-normal border',
+    renderHeader: () => <span className='text-center'>Action</span>,
+    renderCell: (params) => (
+      <div className='flex h-full items-center justify-center gap-2 pt-2'>
+        <button
+          type='button'
+          onClick={() => handleProductView(params.row)}
+          className='flex h-9 items-center rounded-md bg-sky-500 px-3 text-white hover:bg-sky-600 transition'
+          title='View'
+        >
+          <FaEye className='mr-1' />
+          View
+        </button>
+        <button
+          type='button'
+          onClick={() => handleEdit(params.row)}
+          className='flex h-9 items-center rounded-md bg-blue-500 px-3 text-white hover:bg-blue-600 transition'
+          title='Edit'
+        >
+          <FaEdit className='mr-1' />
+          Edit
+        </button>
+        <button
+          type='button'
+          onClick={() => handleImageUpload(params.row)}
+          className='flex h-9 items-center rounded-md bg-purple-500 px-3 text-white hover:bg-purple-600 transition'
+          title='Upload Image'
+        >
+          <FaImage className='mr-1' />
+          Image
+        </button>
+        <button
+          type='button'
+          onClick={() => handleDelete(params.row)}
+          className='flex h-9 items-center rounded-md bg-red-500 px-3 text-white hover:bg-red-600 transition'
+          title='Delete'
+        >
+          <FaTrash className='mr-1' />
+          Delete
         </button>
       </div>
     ),
