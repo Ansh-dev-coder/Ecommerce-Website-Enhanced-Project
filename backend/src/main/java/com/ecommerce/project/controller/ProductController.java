@@ -123,4 +123,16 @@ public class ProductController {
         ProductDTO deleteProduct=productService.deleteProduct(productId);
         return  new ResponseEntity<>(deleteProduct,HttpStatus.OK);
     }
+
+    @GetMapping("admin/products")
+    public ResponseEntity<ProductResponse> getAllProductsForAdmin(
+
+            @RequestParam(name = "pageNumber",defaultValue = AppConst.PAGE_NUMBER,required = false)Integer pageNumber,
+            @RequestParam(name = "pageSize",defaultValue = AppConst.PAGE_SIZE,required = false)Integer pageSize,
+            @RequestParam(name = "sortBy",defaultValue = AppConst.SORT_PRODUCT_BY,required = false)String sortBy,
+            @RequestParam(name = "sortOrder",defaultValue = AppConst.SORT_DIR,required = false)String sortOrder)
+    {
+      ProductResponse productResponse=productService.getAllProductsForAdmin(pageNumber,pageSize,sortBy,sortOrder);
+      return new ResponseEntity<>(productResponse,HttpStatus.OK);
+    }
 }
