@@ -87,8 +87,33 @@ export const adminProductTableColumn = (handleEdit,
   handleImageUpload,
   handleProductView) => [
 
-  
-
+  {
+    sortable: false,
+    disableColumnMenu: true,
+    field: 'image',
+    headerName: 'Image',
+    minWidth: 120,
+    headerAlign: 'center',
+    editable: false,
+    headerClassName: 'test-black font-semibold border',
+    cellClassName: 'test-slate-700 font-normal border',
+    renderHeader: () => <span className='text-center'>Image</span>,
+    renderCell: (params) => (
+      <div className='flex h-full items-center justify-center py-2'>
+        {params.row.image ? (
+          <img
+            src={params.row.image}
+            alt={params.row.productName || 'Product'}
+            className='h-12 w-12 rounded-md object-cover border border-gray-200 bg-white shadow-sm'
+          />
+        ) : (
+          <div className='flex h-12 w-12 items-center justify-center rounded-md border border-dashed border-gray-300 bg-gray-100 text-xs text-gray-500'>
+            No Image
+          </div>
+        )}
+      </div>
+    ),
+  },
   {
     sortable: false,
     disableColumnMenu: true,
