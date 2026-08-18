@@ -90,26 +90,34 @@ const AddProductForm = ({ product, setOpen, update = false }) => {
         return
       }
 
-      // Create FormData for multipart request
-      const formData = new FormData()
-      formData.append('productName', data.productName)
-      formData.append('description', data.description)
-      formData.append('price', parseFloat(data.price))
-      formData.append('discount', parseInt(data.discount) || 0)
-      formData.append('specialPrice', parseFloat(data.specialPrice || 0))
-      formData.append('quantity', parseInt(data.quantity))
-      formData.append('categoryId', data.categoryId)
-
-      // Add image if provided
-      if (imageFile) {
-        formData.append('image', imageFile)
-      }
-
       if (update) {
-        // Update existing product using dispatch
-        dispatch(updateProduct(product.productId, formData, toast, setOpen))
+        // Update existing product - send JSON only (no image)
+        const productData = {
+          productName: data.productName,
+          description: data.description,
+          price: parseFloat(data.price),
+          discount: parseInt(data.discount) || 0,
+          specialPrice: parseFloat(data.specialPrice || 0),
+          quantity: parseInt(data.quantity),
+          categoryId: data.categoryId,
+        }
+        dispatch(updateProduct(product.productId, productData, toast, setOpen))
       } else {
-        // Add new product using dispatch
+        // Create FormData for new product (with image)
+        const formData = new FormData()
+        formData.append('productName', data.productName)
+        formData.append('description', data.description)
+        formData.append('price', parseFloat(data.price))
+        formData.append('discount', parseInt(data.discount) || 0)
+        formData.append('specialPrice', parseFloat(data.specialPrice || 0))
+        formData.append('quantity', parseInt(data.quantity))
+        formData.append('categoryId', data.categoryId)
+
+        // Add image if provided
+        if (imageFile) {
+          formData.append('image', imageFile)
+        }
+
         dispatch(addProduct(formData, toast, setOpen))
         reset()
         setImageFile(null)
@@ -147,34 +155,36 @@ const AddProductForm = ({ product, setOpen, update = false }) => {
       </div>
 
       <form onSubmit={handleSubmit(onSubmitHandler)} className="space-y-6">
-        {/* Product Image Upload */}
-        <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-blue-400 transition">
-          <input
-            type="file"
-            id="image"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="hidden"
-          />
-          <label htmlFor="image" className="cursor-pointer">
-            {imagePreview ? (
-              <div className="space-y-3">
-                <img
-                  src={imagePreview}
-                  alt="Product preview"
-                  className="h-32 w-32 mx-auto object-cover rounded-lg"
-                />
-                <p className="text-sm text-slate-600">Click to change image</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <div className="text-4xl text-slate-400">📷</div>
-                <p className="text-sm font-medium text-slate-700">Click to upload product image</p>
-                <p className="text-xs text-slate-500">PNG, JPG, GIF, WebP up to 5MB</p>
-              </div>
-            )}
-          </label>
-        </div>
+        {/* Product Image Upload - Only for new products, not for editing */}
+        {!update && (
+          <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-blue-400 transition">
+            <input
+              type="file"
+              id="image"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+            />
+            <label htmlFor="image" className="cursor-pointer">
+              {imagePreview ? (
+                <div className="space-y-3">
+                  <img
+                    src={imagePreview}
+                    alt="Product preview"
+                    className="h-32 w-32 mx-auto object-cover rounded-lg"
+                  />
+                  <p className="text-sm text-slate-600">Click to change image</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="text-4xl text-slate-400">📷</div>
+                  <p className="text-sm font-medium text-slate-700">Click to upload product image</p>
+                  <p className="text-xs text-slate-500">PNG, JPG, GIF, WebP up to 5MB</p>
+                </div>
+              )}
+            </label>
+          </div>
+        )}
 
         {/* Product Details Grid */}
         <div className="min-w-0 grid gap-5 md:grid-cols-2">
