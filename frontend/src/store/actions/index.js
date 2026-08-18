@@ -403,3 +403,57 @@ export const dashboardProductsAction=(queryString)=>async (dispatch)=>{
         })
     }
 }
+
+export const addProduct = (formData, toast, setOpen) => async (dispatch) => {
+    try {
+        dispatch({ type: "IS_FETCHING" })
+        
+        const { data } = await api.post('/admin/products', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+
+        dispatch({ type: "IS_SUCCESS" })
+        toast.success('Product added successfully')
+        
+        // Refresh products list
+        dispatch(dashboardProductsAction("page=0&size=10"))
+        
+        if (setOpen) {
+            setOpen(false)
+        }
+    } catch (error) {
+        console.error('Error adding product:', error)
+        dispatch({
+            type: "IS_ERROR",
+            payload: error?.response?.data?.message || "Failed to add product",
+        })
+        toast.error(error?.response?.data?.message || 'Failed to add product')
+    }
+}
+
+export const updateProduct = (productId, productData, toast, setOpen) => async (dispatch) => {
+    try {
+        dispatch({ type: "IS_FETCHING" })
+        
+        const { data } = await api.put(`/admin/products/${productId}`, productData)
+
+        dispatch({ type: "IS_SUCCESS" })
+        toast.success('Product updated successfully')
+        
+        // Refresh products list
+        dispatch(dashboardProductsAction("page=0&size=10"))
+        
+        if (setOpen) {
+            setOpen(false)
+        }
+    } catch (error) {
+        console.error('Error updating product:', error)
+        dispatch({
+            type: "IS_ERROR",
+            payload: error?.response?.data?.message || "Failed to update product",
+        })
+        toast.error(error?.response?.data?.message || 'Failed to update product')
+    }
+}
