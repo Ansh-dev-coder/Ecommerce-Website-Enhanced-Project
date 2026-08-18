@@ -6,6 +6,8 @@ import Loader from '../../shared/Loader';
 import { adminProductTableColumn } from '../../helper/tableColumn';
 import { DataGrid } from '@mui/x-data-grid';
 import useDashboardProductFilter from '../../../hooks/UseDashboardProductFilter';
+import Modal from '../../shared/Modal';
+import AddProductForm from './AddProductForm';
 
 const AdminProducts = () => {
   const { products, pagination } = useSelector((state) => state.products);
@@ -15,8 +17,11 @@ const AdminProducts = () => {
   useDashboardProductFilter();
 
   const emptyProduct = !products || products?.length === 0;
-  const { isLoading, errorMessage } = useSelector((state) => state.error);
+  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [openProductModal, setOpenProductModal] = useState(false)
+  const [isEditMode, setIsEditMode] = useState(false)
 
+  const { isLoading, errorMessage } = useSelector((state) => state.error);
   const tableRecords = products?.map((item) => {
     return {
       id: item.productId,
@@ -32,14 +37,19 @@ const AdminProducts = () => {
   });
 
   const handleEdit = (product) => {
-    console.log('Edit product:', product)
-    // TODO: Add edit functionality
+    setSelectedProduct(product)
+    setIsEditMode(true)
+    setOpenProductModal(true)
+  }
+
+  const handleAddNew = () => {
+    setSelectedProduct(null)
+    setIsEditMode(false)
+    setOpenProductModal(true)
   }
 
   const handleDelete = (product) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      console.log('Delete product:', product)
-    }
+   
   }
 
   const handleImageUpload = (product) => {
@@ -60,7 +70,10 @@ const AdminProducts = () => {
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="flex justify-between items-center mb-8 bg-white p-6 rounded-lg shadow-md">
         <h1 className="text-3xl font-bold text-gray-800">Products Management</h1>
-        <button className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-semibold transition duration-300">
+        <button 
+          onClick={handleAddNew}
+          className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-semibold transition duration-300 flex items-center gap-2"
+        >
           <MdAddShoppingCart />
           Add New Product
         </button>
@@ -115,6 +128,18 @@ const AdminProducts = () => {
       )}
 
       {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
+
+      <Modal 
+        open={openProductModal}
+        setOpen={setOpenProductModal}
+        title={isEditMode ? 'Update Product' : 'Add New Product'}
+      >
+        <AddProductForm
+          setOpen={setOpenProductModal}
+          product={selectedProduct}
+          update={isEditMode}
+        />
+      </Modal>
     </div>
   )
 }
