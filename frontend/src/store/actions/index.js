@@ -404,21 +404,17 @@ export const dashboardProductsAction=(queryString)=>async (dispatch)=>{
     }
 }
 
-export const addProduct = (formData, toast, setOpen) => async (dispatch) => {
+export const addProduct = (productData, toast, setOpen) => async (dispatch) => {
     try {
         dispatch({ type: "IS_FETCHING" })
         
-        const { data } = await api.post('/admin/products', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        })
+        const { data } = await api.post(`/admin/categories/${productData.categoryId}/product`, productData)
 
         dispatch({ type: "IS_SUCCESS" })
         toast.success('Product added successfully')
         
         // Refresh products list
-        dispatch(dashboardProductsAction("page=0&size=10"))
+        dispatch(dashboardProductsAction("pageNumber=0"))
         
         if (setOpen) {
             setOpen(false)
@@ -443,7 +439,7 @@ export const updateProduct = (productId, productData, toast, setOpen) => async (
         toast.success('Product updated successfully')
         
         // Refresh products list
-        dispatch(dashboardProductsAction("page=0&size=10"))
+        dispatch(dashboardProductsAction("pageNumber=0"))
         
         if (setOpen) {
             setOpen(false)
@@ -455,5 +451,25 @@ export const updateProduct = (productId, productData, toast, setOpen) => async (
             payload: error?.response?.data?.message || "Failed to update product",
         })
         toast.error(error?.response?.data?.message || 'Failed to update product')
+    }
+}
+
+export const deleteProduct = (productId, toast, onSuccess, queryString = "pageNumber=0") => async (dispatch) => {
+    try {
+        dispatch({ type: "IS_FETCHING" })
+
+        const { data } = await api.delete(`/admin/products/${productId}`)
+
+        dispatch({ type: "IS_SUCCESS" })
+        toast.success(data?.message || "Product deleted successfully")
+        dispatch(dashboardProductsAction(queryString))
+        onSuccess?.()
+    } catch (error) {
+        console.error("Error deleting product:", error)
+        dispatch({
+            type: "IS_ERROR",
+            payload: error?.response?.data?.message || "Failed to delete product",
+        })
+        toast.error(error?.response?.data?.message || "Failed to delete product")
     }
 }
