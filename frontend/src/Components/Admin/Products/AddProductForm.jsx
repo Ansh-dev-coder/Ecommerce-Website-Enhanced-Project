@@ -9,8 +9,6 @@ import { fetchCategories, addProduct, updateProduct } from '../../../store/actio
 
 const AddProductForm = ({ product, setOpen, update = false }) => {
   const dispatch = useDispatch()
-  const [imageFile, setImageFile] = useState(null)
-  const [imagePreview, setImagePreview] = useState(product?.image || null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const { categories } = useSelector((state) => state.products)
@@ -51,33 +49,8 @@ const AddProductForm = ({ product, setOpen, update = false }) => {
       setValue('specialPrice', product?.specialPrice || '')
       setValue('quantity', product?.quantity || '')
       setValue('categoryId', product?.categoryId || '')
-      if (product?.image) {
-        setImagePreview(product.image)
-      }
     }
   }, [product, setValue])
-
-  // Handle image file selection
-  const handleImageChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        // 5MB limit
-        toast.error('Image size should be less than 5MB')
-        return
-      }
-      if (!['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
-        toast.error('Please upload a valid image format (JPEG, PNG, GIF, WebP)')
-        return
-      }
-      setImageFile(file)
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setImagePreview(reader.result)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
 
   // Handle form submission
   const onSubmitHandler = async (data) => {
@@ -90,38 +63,24 @@ const AddProductForm = ({ product, setOpen, update = false }) => {
         return
       }
 
+      // Create product data object
+      const productData = {
+        productName: data.productName,
+        description: data.description,
+        price: parseFloat(data.price),
+        discount: parseInt(data.discount) || 0,
+        specialPrice: parseFloat(data.specialPrice || 0),
+        quantity: parseInt(data.quantity),
+        categoryId: data.categoryId,
+      }
+
       if (update) {
-        // Update existing product - send JSON only (no image)
-        const productData = {
-          productName: data.productName,
-          description: data.description,
-          price: parseFloat(data.price),
-          discount: parseInt(data.discount) || 0,
-          specialPrice: parseFloat(data.specialPrice || 0),
-          quantity: parseInt(data.quantity),
-          categoryId: data.categoryId,
-        }
+        // Update existing product
         dispatch(updateProduct(product.productId, productData, toast, setOpen))
       } else {
-        // Create FormData for new product (with image)
-        const formData = new FormData()
-        formData.append('productName', data.productName)
-        formData.append('description', data.description)
-        formData.append('price', parseFloat(data.price))
-        formData.append('discount', parseInt(data.discount) || 0)
-        formData.append('specialPrice', parseFloat(data.specialPrice || 0))
-        formData.append('quantity', parseInt(data.quantity))
-        formData.append('categoryId', data.categoryId)
-
-        // Add image if provided
-        if (imageFile) {
-          formData.append('image', imageFile)
-        }
-
-        dispatch(addProduct(formData, toast, setOpen))
+        // Add new product
+        dispatch(addProduct(productData, toast, setOpen))
         reset()
-        setImageFile(null)
-        setImagePreview(null)
       }
     } catch (error) {
       console.error('Error submitting form:', error)
@@ -155,37 +114,6 @@ const AddProductForm = ({ product, setOpen, update = false }) => {
       </div>
 
       <form onSubmit={handleSubmit(onSubmitHandler)} className="space-y-6">
-        {/* Product Image Upload - Only for new products, not for editing */}
-        {!update && (
-          <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-blue-400 transition">
-            <input
-              type="file"
-              id="image"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="hidden"
-            />
-            <label htmlFor="image" className="cursor-pointer">
-              {imagePreview ? (
-                <div className="space-y-3">
-                  <img
-                    src={imagePreview}
-                    alt="Product preview"
-                    className="h-32 w-32 mx-auto object-cover rounded-lg"
-                  />
-                  <p className="text-sm text-slate-600">Click to change image</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  <div className="text-4xl text-slate-400">📷</div>
-                  <p className="text-sm font-medium text-slate-700">Click to upload product image</p>
-                  <p className="text-xs text-slate-500">PNG, JPG, GIF, WebP up to 5MB</p>
-                </div>
-              )}
-            </label>
-          </div>
-        )}
-
         {/* Product Details Grid */}
         <div className="min-w-0 grid gap-5 md:grid-cols-2">
           <InputField
@@ -313,11 +241,7 @@ const AddProductForm = ({ product, setOpen, update = false }) => {
           {!update && (
             <button
               type="button"
-              onClick={() => {
-                reset()
-                setImageFile(null)
-                setImagePreview(null)
-              }}
+              onClick={() => reset()}
               className="flex-1 rounded-lg border border-slate-300 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
             >
               Reset
