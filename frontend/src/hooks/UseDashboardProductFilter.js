@@ -3,16 +3,19 @@ import { useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { dashboardProductsAction } from "../store/actions";
 
-const useDashboardProductFilter = () => {
+const useDashboardProductFilter = (page = 0, size) => {
   const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
+  const searchParamString = searchParams.toString();
 
   useEffect(() => {
     const params = new URLSearchParams();
-    const currentPage = searchParams.get("page") ? Number(searchParams.get("page")) : 1;
 
-    params.set("pageNumber", String(currentPage - 1));
-    params.set("size", "10");
+    params.set("pageNumber", String(page));
+
+    if (size !== undefined) {
+      params.set("pageSize", String(size));
+    }
 
     const sortOrder = searchParams.get("sortby") || "asc";
     const categoryParams = searchParams.get("category") || null;
@@ -31,7 +34,7 @@ const useDashboardProductFilter = () => {
 
     const queryString = params.toString();
     dispatch(dashboardProductsAction(queryString));
-  }, [dispatch, searchParams]);
+  }, [dispatch, page, size, searchParamString]);
 };
 
 export default useDashboardProductFilter;
