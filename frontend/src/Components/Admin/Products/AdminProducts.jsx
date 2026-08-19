@@ -1,24 +1,52 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { MdAddShoppingCart } from 'react-icons/md'
 import { FaBoxOpen } from 'react-icons/fa'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import toast from 'react-hot-toast';
 import Loader from '../../shared/Loader';
 import { adminProductTableColumn } from '../../helper/tableColumn';
 import { DataGrid } from '@mui/x-data-grid';
 import useDashboardProductFilter from '../../../hooks/UseDashboardProductFilter';
 import Modal from '../../shared/Modal';
+import DeleteModal from '../../shared/DeleteModal';
 import AddProductForm from './AddProductForm';
+import { deleteProduct } from '../../../store/actions';
 
 const AdminProducts = () => {
+  const dispatch = useDispatch();
   const { products, pagination } = useSelector((state) => state.products);
 
-  const [currentPage, setCurrentPage] = useState((pagination?.pageNumber ?? 0) + 1);
+  const [paginationModel, setPaginationModel] = useState({
+    page: pagination?.pageNumber ?? 0,
+    pageSize: pagination?.pageSize,
+  });
 
-  useDashboardProductFilter();
+  useDashboardProductFilter(paginationModel.page, paginationModel.pageSize);
+
+  // Keep the controlled DataGrid model aligned with the server response.
+  useEffect(() => {
+    setPaginationModel((previousModel) => {
+      const nextModel = {
+        page: pagination?.pageNumber ?? previousModel.page,
+        pageSize: pagination?.pageSize ?? previousModel.pageSize,
+      };
+
+      if (
+        nextModel.page === previousModel.page &&
+        nextModel.pageSize === previousModel.pageSize
+      ) {
+        return previousModel;
+      }
+
+      return nextModel;
+    });
+  }, [pagination?.pageNumber, pagination?.pageSize]);
 
   const emptyProduct = !products || products?.length === 0;
   const [selectedProduct, setSelectedProduct] = useState(null)
+  const [selectedDeleteProduct, setSelectedDeleteProduct] = useState(null)
   const [openProductModal, setOpenProductModal] = useState(false)
+  const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
 
   const { isLoading, errorMessage } = useSelector((state) => state.error);
@@ -35,6 +63,10 @@ const AdminProducts = () => {
       specialPrice: item.specialPrice,
     };
   });
+  const dataGridPaginationModel = {
+    page: paginationModel.page,
+    pageSize: paginationModel.pageSize ?? pagination?.pageSize,
+  };
 
   const handleEdit = (product) => {
     setSelectedProduct(product)
@@ -49,7 +81,39 @@ const AdminProducts = () => {
   }
 
   const handleDelete = (product) => {
-   
+    setSelectedDeleteProduct(product)
+    setOpenDeleteModal(true)
+  }
+
+  const handleDeleteConfirm = () => {
+    if (!selectedDeleteProduct) {
+      return
+    }
+
+    const params = new URLSearchParams()
+    params.set('pageNumber', String(paginationModel.page))
+
+    if (dataGridPaginationModel.pageSize !== undefined) {
+      params.set('pageSize', String(dataGridPaginationModel.pageSize))
+    }
+
+    dispatch(deleteProduct(
+      selectedDeleteProduct.productId,
+      toast,
+      () => {
+        setOpenDeleteModal(false)
+        setSelectedDeleteProduct(null)
+      },
+      params.toString()
+    ))
+  }
+
+  const handleDeleteModalOpen = (open) => {
+    setOpenDeleteModal(open)
+
+    if (!open) {
+      setSelectedDeleteProduct(null)
+    }
   }
 
   const handleImageUpload = (product) => {
@@ -63,7 +127,7 @@ const AdminProducts = () => {
   }
 
   const handlePaginationChange = (newPaginationModel) => {
-    setCurrentPage(newPaginationModel.page + 1)
+    setPaginationModel(newPaginationModel);
   }
 
   return (
@@ -98,16 +162,9 @@ const AdminProducts = () => {
                 autoHeight
                 paginationMode="server"
                 rowCount={pagination?.totalElements || 0}
-                initialState={{
-                  pagination: {
-                    paginationModel: {
-                      pageSize: pagination?.pageSize || 10,
-                      page: currentPage - 1,
-                    },
-                  },
-                }}
+                paginationModel={dataGridPaginationModel}
                 onPaginationModelChange={handlePaginationChange}
-                pageSizeOptions={[pagination?.pageSize || 10]}
+                pageSizeOptions={pagination?.pageSize ? [pagination.pageSize] : []}
                 checkboxSelection
                 disableRowSelectionOnClick
                 disableColumnResize
@@ -115,7 +172,7 @@ const AdminProducts = () => {
                 paginationOptions={{
                   showFirstButton: true,
                   showLastButton: true,
-                  hideNextButton: currentPage === pagination?.totalPages,
+                  hideNextButton: paginationModel.page === pagination?.totalPages - 1,
                 }}
                 sx={{
                   '& .MuiDataGrid-cell': { py: 1 },
@@ -140,6 +197,13 @@ const AdminProducts = () => {
           update={isEditMode}
         />
       </Modal>
+
+      <DeleteModal
+        open={openDeleteModal}
+        setOpen={handleDeleteModalOpen}
+        title="Delete Product"
+        onDelete={handleDeleteConfirm}
+      />
     </div>
   )
 }
