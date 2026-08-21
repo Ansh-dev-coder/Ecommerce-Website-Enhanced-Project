@@ -269,3 +269,59 @@ export const adminProductTableColumn = (handleEdit,
     ),
   },
 ];
+
+export const adminCategoryTableColumn = (handleDelete) => [
+  {
+    sortable: false,
+    disableColumnMenu: true,
+    field: 'categoryId',
+    headerName: 'ID',
+    minWidth: 140,
+    flex: 0.4,
+    headerAlign: 'center',
+    align: 'center',
+    editable: false,
+    headerClassName: 'test-black font-semibold border',
+    cellClassName: 'test-slate-700 font-normal border',
+    renderHeader: () => <span className='text-center'>Category ID</span>,
+  },
+  {
+    sortable: false,
+    disableColumnMenu: true,
+    field: 'categoryName',
+    headerName: 'Category Name',
+    minWidth: 240,
+    flex: 1,
+    headerAlign: 'center',
+    editable: false,
+    headerClassName: 'test-black font-semibold border',
+    cellClassName: 'test-slate-700 font-normal border',
+    renderHeader: () => <span className='text-center'>Category Name</span>,
+  },
+  {
+    sortable: false,
+    disableColumnMenu: true,
+    field: 'action',
+    headerName: 'Action',
+    minWidth: 180,
+    headerAlign: 'center',
+    align: 'center',
+    editable: false,
+    headerClassName: 'test-black font-semibold border',
+    cellClassName: 'test-slate-700 font-normal border',
+    renderHeader: () => <span className='text-center'>Action</span>,
+    renderCell: (params) => (
+      <div className='flex h-full items-center justify-center pt-2'>
+        <button
+          type='button'
+          onClick={() => handleDelete(params.row)}
+          className='flex h-9 items-center rounded-md bg-red-500 px-3 text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-slate-400'
+          title='Delete'
+        >
+          <FaTrash className='mr-1' />
+          Delete
+        </button>
+      </div>
+    ),
+  },
+];
