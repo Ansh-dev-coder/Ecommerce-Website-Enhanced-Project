@@ -29,11 +29,12 @@ export const fetchProducts=(queryString)=>async (dispatch)=>{
     }
 }
 
-export const fetchCategories=()=>async(dispatch)=>{
+export const fetchCategories=(queryString = "")=>async(dispatch)=>{
 
     try{
         dispatch({type:"CATEGORY_LOADER"})
-        const {data} =await api.get(`/public/categories`)
+        const categoryUrl = queryString ? `/public/categories?${queryString}` : `/public/categories`
+        const {data} =await api.get(categoryUrl)
         dispatch({
             type : "FETCH_CATEGORIES"   ,
             payload: data.content,
@@ -52,6 +53,52 @@ export const fetchCategories=()=>async(dispatch)=>{
             })
     }
 
+}
+
+export const addCategory = (categoryData, toast, onSuccess, setLoader, queryString = "") => async (dispatch) => {
+    try {
+        setLoader?.(true)
+        dispatch({ type: "BUTTON_LOADER" })
+
+        const { data } = await api.post(`/admin/categories`, categoryData)
+
+        dispatch({ type: "IS_SUCCESS" })
+        toast.success(data?.message || "Category added successfully")
+        await dispatch(fetchCategories(queryString))
+        onSuccess?.()
+    } catch (error) {
+        console.error("Error adding category:", error)
+        dispatch({
+            type: "IS_ERROR",
+            payload: error?.response?.data?.message || "Failed to add category",
+        })
+        toast.error(error?.response?.data?.message || "Failed to add category")
+    } finally {
+        setLoader?.(false)
+    }
+}
+
+export const deleteCategory = (categoryId, toast, onSuccess, setLoader, queryString = "") => async (dispatch) => {
+    try {
+        setLoader?.(true)
+        dispatch({ type: "BUTTON_LOADER" })
+
+        const { data } = await api.delete(`/admin/categories/${categoryId}`)
+
+        dispatch({ type: "IS_SUCCESS" })
+        toast.success(data?.message || "Category deleted successfully")
+        await dispatch(fetchCategories(queryString))
+        onSuccess?.()
+    } catch (error) {
+        console.error("Error deleting category:", error)
+        dispatch({
+            type: "IS_ERROR",
+            payload: error?.response?.data?.message || "Failed to delete category",
+        })
+        toast.error(error?.response?.data?.message || "Failed to delete category")
+    } finally {
+        setLoader?.(false)
+    }
 }
 
 
