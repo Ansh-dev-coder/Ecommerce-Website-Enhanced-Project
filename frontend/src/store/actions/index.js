@@ -473,3 +473,29 @@ export const deleteProduct = (productId, toast, onSuccess, queryString = "pageNu
         toast.error(error?.response?.data?.message || "Failed to delete product")
     }
 }
+
+export const updateProductImage = (productId, imageFile, toast, setOpen, setLoader, queryString = "pageNumber=0") => async (dispatch) => {
+    const formData = new FormData()
+    formData.append("image", imageFile)
+
+    try {
+        setLoader?.(true)
+        dispatch({ type: "IS_FETCHING" })
+
+        const { data } = await api.put(`/products/${productId}/image`, formData)
+
+        dispatch({ type: "IS_SUCCESS" })
+        toast.success(data?.message || "Product image updated successfully")
+        dispatch(dashboardProductsAction(queryString))
+        setOpen?.(false)
+    } catch (error) {
+        console.error("Error updating product image:", error)
+        dispatch({
+            type: "IS_ERROR",
+            payload: error?.response?.data?.message || "Failed to update product image",
+        })
+        toast.error(error?.response?.data?.message || "Failed to update product image")
+    } finally {
+        setLoader?.(false)
+    }
+}
