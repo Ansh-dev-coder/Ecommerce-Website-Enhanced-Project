@@ -9,7 +9,9 @@ import { DataGrid } from '@mui/x-data-grid';
 import useDashboardProductFilter from '../../../hooks/UseDashboardProductFilter';
 import Modal from '../../shared/Modal';
 import DeleteModal from '../../shared/DeleteModal';
+import ProductViewModal from '../../shared/ProductViewModal';
 import AddProductForm from './AddProductForm';
+import ProductImageUpdate from './ProductImageUpdate';
 import { deleteProduct } from '../../../store/actions';
 
 const AdminProducts = () => {
@@ -44,8 +46,12 @@ const AdminProducts = () => {
 
   const emptyProduct = !products || products?.length === 0;
   const [selectedProduct, setSelectedProduct] = useState(null)
+  const [selectedViewProduct, setSelectedViewProduct] = useState(null)
+  const [selectedImageProduct, setSelectedImageProduct] = useState(null)
   const [selectedDeleteProduct, setSelectedDeleteProduct] = useState(null)
   const [openProductModal, setOpenProductModal] = useState(false)
+  const [openProductViewModal, setOpenProductViewModal] = useState(false)
+  const [openImageModal, setOpenImageModal] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -67,6 +73,16 @@ const AdminProducts = () => {
     page: paginationModel.page,
     pageSize: paginationModel.pageSize ?? pagination?.pageSize,
   };
+  const getDashboardProductQueryString = () => {
+    const params = new URLSearchParams()
+    params.set('pageNumber', String(paginationModel.page))
+
+    if (dataGridPaginationModel.pageSize !== undefined) {
+      params.set('pageSize', String(dataGridPaginationModel.pageSize))
+    }
+
+    return params.toString()
+  }
 
   const handleEdit = (product) => {
     setSelectedProduct(product)
@@ -90,13 +106,6 @@ const AdminProducts = () => {
       return
     }
 
-    const params = new URLSearchParams()
-    params.set('pageNumber', String(paginationModel.page))
-
-    if (dataGridPaginationModel.pageSize !== undefined) {
-      params.set('pageSize', String(dataGridPaginationModel.pageSize))
-    }
-
     dispatch(deleteProduct(
       selectedDeleteProduct.productId,
       toast,
@@ -104,7 +113,7 @@ const AdminProducts = () => {
         setOpenDeleteModal(false)
         setSelectedDeleteProduct(null)
       },
-      params.toString()
+      getDashboardProductQueryString()
     ))
   }
 
@@ -117,13 +126,29 @@ const AdminProducts = () => {
   }
 
   const handleImageUpload = (product) => {
-    console.log('Upload image for product:', product)
-    // TODO: Add image upload functionality
+    setSelectedImageProduct(product)
+    setOpenImageModal(true)
+  }
+
+  const handleImageModalOpen = (open) => {
+    setOpenImageModal(open)
+
+    if (!open) {
+      setSelectedImageProduct(null)
+    }
   }
 
   const handleProductView = (product) => {
-    console.log('View product:', product)
-    // TODO: Add view product functionality
+    setSelectedViewProduct(product)
+    setOpenProductViewModal(true)
+  }
+
+  const handleProductViewModalOpen = (open) => {
+    setOpenProductViewModal(open)
+
+    if (!open) {
+      setSelectedViewProduct(null)
+    }
   }
 
   const handlePaginationChange = (newPaginationModel) => {
@@ -204,6 +229,27 @@ const AdminProducts = () => {
         title="Delete Product"
         onDelete={handleDeleteConfirm}
       />
+
+      {selectedViewProduct && (
+        <ProductViewModal
+          open={openProductViewModal}
+          setOpen={handleProductViewModalOpen}
+          product={selectedViewProduct}
+          isAvailable={selectedViewProduct.quantity > 0}
+        />
+      )}
+
+      <Modal
+        open={openImageModal}
+        setOpen={handleImageModalOpen}
+        title="Update Product Image"
+      >
+        <ProductImageUpdate
+          product={selectedImageProduct}
+          setOpen={handleImageModalOpen}
+          queryString={getDashboardProductQueryString()}
+        />
+      </Modal>
     </div>
   )
 }
