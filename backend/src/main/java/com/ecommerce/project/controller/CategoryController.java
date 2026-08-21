@@ -46,7 +46,7 @@ public class CategoryController {
     @ApiResponses({@ApiResponse(responseCode = "201",description = "Created Successfully"),
             @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
             @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
-    @PostMapping("/public/categories")
+    @PostMapping("/admin/categories")
     public ResponseEntity<CategoryDto> createCategory(@Valid @RequestBody CategoryDto categoryDto) {
        CategoryDto savedCategoryDto= categoryService.createCategory(categoryDto);
         return new  ResponseEntity<>(savedCategoryDto, HttpStatus.CREATED);
@@ -68,7 +68,7 @@ public class CategoryController {
     @ApiResponses({@ApiResponse(responseCode = "200",description = "Updated Successfully"),
             @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
             @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
-    @PutMapping("public/categories/{categoryId}")
+    @PutMapping("admin/categories/{categoryId}")
     public ResponseEntity<CategoryDto> updateCategory(@Valid @RequestBody CategoryDto categoryDto,
                                                       @PathVariable Long categoryId) {
             CategoryDto savedCategory=categoryService.updateCategory(categoryDto,categoryId);
