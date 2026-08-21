@@ -1,7 +1,15 @@
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import { FaTimes, FaTrash } from 'react-icons/fa'
+import Spinners from './Spinners'
 
-const DeleteModal = ({ open, setOpen, title = 'Confirm Delete', onDelete }) => {
+const DeleteModal = ({
+  open,
+  setOpen,
+  title = 'Confirm Delete',
+  message = 'Are you sure you want to delete this product? This action cannot be undone.',
+  onDelete,
+  isLoading = false,
+}) => {
   return (
     <Dialog open={open} onClose={() => setOpen(false)} className="relative z-50">
       <DialogBackdrop className="fixed inset-0 bg-gray-500/75 transition-opacity duration-500 ease-in-out data-closed:opacity-0" />
@@ -18,6 +26,7 @@ const DeleteModal = ({ open, setOpen, title = 'Confirm Delete', onDelete }) => {
             <button
               type="button"
               onClick={() => setOpen(false)}
+              disabled={isLoading}
               className="text-slate-500 transition hover:text-slate-800"
             >
               <FaTimes />
@@ -29,7 +38,7 @@ const DeleteModal = ({ open, setOpen, title = 'Confirm Delete', onDelete }) => {
               <FaTrash size={22} />
             </div>
             <p className="text-sm leading-6 text-slate-600">
-              Are you sure you want to delete this product? This action cannot be undone.
+              {message}
             </p>
           </div>
 
@@ -37,16 +46,25 @@ const DeleteModal = ({ open, setOpen, title = 'Confirm Delete', onDelete }) => {
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="flex-1 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              disabled={isLoading}
+              className="flex-1 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70"
             >
               Cancel
             </button>
             <button
               type="button"
               onClick={onDelete}
-              className="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700"
+              disabled={isLoading}
+              className="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-slate-400 disabled:opacity-70"
             >
-              Delete
+              {isLoading ? (
+                <span className="inline-flex items-center justify-center gap-2">
+                  <Spinners />
+                  <span>Deleting...</span>
+                </span>
+              ) : (
+                'Delete'
+              )}
             </button>
           </div>
         </DialogPanel>
