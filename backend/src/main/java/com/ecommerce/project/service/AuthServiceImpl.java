@@ -4,6 +4,8 @@ import com.ecommerce.project.model.AppRole;
 import com.ecommerce.project.model.Role;
 import com.ecommerce.project.model.User;
 import com.ecommerce.project.payload.AuthenticationResult;
+import com.ecommerce.project.payload.UserDTO;
+import com.ecommerce.project.payload.UserResponse;
 import com.ecommerce.project.repositories.RoleRepository;
 import com.ecommerce.project.repositories.UserRepository;
 import com.ecommerce.project.security.jwt.JwtUtils;
@@ -13,7 +15,10 @@ import com.ecommerce.project.security.request.SignupRequest;
 import com.ecommerce.project.security.response.MessageResponse;
 import com.ecommerce.project.security.response.UserInfoResponse;
 import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,6 +43,8 @@ public class AuthServiceImpl implements AuthService{
     private RoleRepository roleRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ModelMapper mapper;
 
     @Override
     public AuthenticationResult login(LoginRequest loginRequest) {
@@ -120,5 +127,20 @@ public class AuthServiceImpl implements AuthService{
     public ResponseCookie logoutUser() {
 
         return  jwtUtils.getCleanCookie();
+    }
+
+    @Override
+    public UserResponse getAllSellers(Pageable pageDetails) {
+        Page<User> allUser=userRepository.findByRoleName(AppRole.ROLE_SELLER,pageDetails);
+        List<UserDTO> userDTOS=allUser.getContent().stream().map(p->mapper.map(p, UserDTO.class)).toList();
+
+        UserResponse userResponse=new UserResponse();
+        userResponse.setContent(userDTOS);
+        userResponse.setPageNumber(allUser.getNumber());
+        userResponse.setPageSize(allUser.getSize());
+        userResponse.setTotalElements(allUser.getTotalElements());
+        userResponse.setTotalPages(allUser.getTotalPages());
+        userResponse.setLastPage(allUser.isLast());
+        return userResponse;
     }
 }
