@@ -1,6 +1,4 @@
-import { MdApi } from "react-icons/md"
 import api from "../../api/api"
-import { useState } from "react"
 import toast from "react-hot-toast"
 
 
@@ -208,8 +206,82 @@ toast.error(error?.response?.data?.message || "Internal Server Error")
 
 }
 finally{
-    setLoader(false)
+setLoader(false)
 }
+}
+
+export const getAllSellers=(queryString = "")=>async (dispatch)=>{
+    try{
+        dispatch({type:"IS_FETCHING"})
+        const sellerUrl = queryString ? `/auth/sellers?${queryString}` : `/auth/sellers`
+        const {data}=await api.get(sellerUrl)
+        dispatch({
+            type: "FETCH_SELLERS",
+            payload: data.content,
+            pageNumber: data.pageNumber,
+            pageSize: data.pageSize,
+            totalElements: data.totalElements,
+            totalPages: data.totalPages,
+            lastPage: data.lastPage,
+        })
+
+        dispatch({type:"IS_SUCCESS"})
+    }catch(error){
+        console.log(error)
+        dispatch({
+            type:"IS_ERROR",
+            payload: error?.response?.data?.message || "failed to fetch sellers",
+        })
+    }
+}
+
+export const addSeller = (sellerData, toast, onSuccess, setLoader, queryString = "") => async (dispatch) => {
+    try {
+        setLoader?.(true)
+        dispatch({ type: "BUTTON_LOADER" })
+
+        const { data } = await api.post("/auth/signup", {
+            ...sellerData,
+            roles: ["seller"],
+        })
+
+        dispatch({ type: "IS_SUCCESS" })
+        toast.success(data?.message || "Seller added successfully")
+        await dispatch(getAllSellers(queryString))
+        onSuccess?.()
+    } catch (error) {
+        console.error("Error adding seller:", error)
+        dispatch({
+            type: "IS_ERROR",
+            payload: error?.response?.data?.message || "Failed to add seller",
+        })
+        toast.error(error?.response?.data?.message || "Failed to add seller")
+    } finally {
+        setLoader?.(false)
+    }
+}
+
+export const deleteSeller = (sellerId, toast, onSuccess, setLoader, queryString = "") => async (dispatch) => {
+    try {
+        setLoader?.(true)
+        dispatch({ type: "BUTTON_LOADER" })
+
+        const { data } = await api.delete(`/auth/sellers/${sellerId}`)
+
+        dispatch({ type: "IS_SUCCESS" })
+        toast.success(data?.message || "Seller deleted successfully")
+        await dispatch(getAllSellers(queryString))
+        onSuccess?.()
+    } catch (error) {
+        console.error("Error deleting seller:", error)
+        dispatch({
+            type: "IS_ERROR",
+            payload: error?.response?.data?.message || "Failed to delete seller",
+        })
+        toast.error(error?.response?.data?.message || "Failed to delete seller")
+    } finally {
+        setLoader?.(false)
+    }
 }
 
 export const addUpdateUserAddress=(sendData,toast,addressId,setOpenAddressModal,)=> async(dispatch,getState)=>{
