@@ -325,3 +325,100 @@ export const adminCategoryTableColumn = (handleDelete) => [
     ),
   },
 ];
+
+export const adminSellerTableColumn = (handleView, handleDelete) => [
+  {
+    sortable: false,
+    disableColumnMenu: true,
+    field: 'userId',
+    headerName: 'Seller ID',
+    minWidth: 140,
+    flex: 0.4,
+    headerAlign: 'center',
+    align: 'center',
+    editable: false,
+    headerClassName: 'test-black font-semibold border',
+    cellClassName: 'test-slate-700 font-normal border',
+    renderHeader: () => <span className='text-center'>Seller ID</span>,
+  },
+  {
+    sortable: true,
+    disableColumnMenu: true,
+    field: 'username',
+    headerName: 'Username',
+    minWidth: 200,
+    flex: 1,
+    headerAlign: 'center',
+    editable: false,
+    headerClassName: 'test-black font-semibold border',
+    cellClassName: 'test-slate-700 font-normal border',
+    renderHeader: () => <span className='text-center'>Username</span>,
+  },
+  {
+    sortable: true,
+    disableColumnMenu: true,
+    field: 'email',
+    headerName: 'Email',
+    minWidth: 240,
+    flex: 1,
+    headerAlign: 'center',
+    editable: false,
+    headerClassName: 'test-black font-semibold border',
+    cellClassName: 'test-slate-700 font-normal border',
+    renderHeader: () => <span className='text-center'>Email</span>,
+  },
+  {
+    sortable: false,
+    disableColumnMenu: true,
+    field: 'role',
+    headerName: 'Role',
+    minWidth: 180,
+    flex: 0.7,
+    headerAlign: 'center',
+    align: 'center',
+    editable: false,
+    headerClassName: 'test-black font-semibold border',
+    cellClassName: 'test-slate-700 font-normal border',
+    renderHeader: () => <span className='text-center'>Role</span>,
+    renderCell: (params) => (
+      <span className='rounded-full bg-cyan-100 px-3 py-1 text-xs font-semibold text-cyan-800'>
+        {params.row.role || 'SELLER'}
+      </span>
+    ),
+  },
+  {
+    sortable: false,
+    disableColumnMenu: true,
+    field: 'action',
+    headerName: 'Action',
+    minWidth: 240,
+    headerAlign: 'center',
+    align: 'center',
+    editable: false,
+    headerClassName: 'test-black font-semibold border',
+    cellClassName: 'test-slate-700 font-normal border',
+    renderHeader: () => <span className='text-center'>Action</span>,
+    renderCell: (params) => (
+      <div className='flex h-full items-center justify-center gap-2 pt-2'>
+        <button
+          type='button'
+          onClick={() => handleView(params.row)}
+          className='flex h-9 items-center rounded-md bg-sky-500 px-3 text-white transition hover:bg-sky-600'
+          title='View'
+        >
+          <FaEye className='mr-1' />
+          View
+        </button>
+        <button
+          type='button'
+          onClick={() => handleDelete(params.row)}
+          className='flex h-9 items-center rounded-md bg-red-500 px-3 text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-slate-400'
+          title='Delete'
+        >
+          <FaTrash className='mr-1' />
+          Delete
+        </button>
+      </div>
+    ),
+  },
+];
