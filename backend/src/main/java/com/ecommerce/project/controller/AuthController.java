@@ -1,6 +1,7 @@
 package com.ecommerce.project.controller;
 
 
+import com.ecommerce.project.config.AppConst;
 import com.ecommerce.project.payload.AuthenticationResult;
 import com.ecommerce.project.security.request.LoginRequest;
 import com.ecommerce.project.security.request.SignupRequest;
@@ -13,6 +14,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -92,5 +97,15 @@ public ResponseEntity<?> register(@Valid @RequestBody SignupRequest signupReques
    {
        ResponseCookie cookie=authService.logoutUser();
        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,cookie.toString()).body(new MessageResponse("You have been signed out"));
+   }
+
+   @GetMapping("/sellers")
+    public ResponseEntity<?> getAllSellers(
+            @RequestParam(name = "pageNumber" ,defaultValue = AppConst.PAGE_NUMBER,required = false)Integer pageNumber
+   ){
+       Sort sortByAndOrder=Sort.by(AppConst.SORT_USERS_BY).descending();
+       Pageable pageDetails= PageRequest.of(pageNumber,Integer.parseInt(AppConst.PAGE_SIZE),sortByAndOrder);
+       return  ResponseEntity.ok(authService.getAllSellers(pageDetails));
+
    }
 }
