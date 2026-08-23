@@ -18,6 +18,4 @@ public class OrderResponse {
     private Long totalElements;
     private Integer totalPages;
     private boolean lastPage;
-
-
 }
