@@ -108,7 +108,6 @@ export const addtoCart =(data ,qty=1 ,toast)=>
         const isQuantityExist=getProduct.quantity>=qty
         if(isQuantityExist){dispatch({type:"ADD_CART",payload:{...data,quantity:qty}})
          toast.success(`${data.productName} added to cart successfully`)
-            localStorage.setItem("cartItems",JSON.stringify(getState().carts.cart))
             
         }else{
 
@@ -137,7 +136,6 @@ export const increaseCartQuantity =
         payload : {...data , quantity: newQuantity}
     })
 
-    localStorage.setItem("cartItems",JSON.stringify(getState().carts.cart))
   }else{
     toast.error("Quantity reached to limit")
   }
@@ -157,7 +155,6 @@ export const decreaseCartQuantity =
         payload : {...data , quantity: newQuantity}
     })
 
-  localStorage.setItem("cartItems",JSON.stringify(getState().carts.cart))
 }
 
 export const removeCartItem =
@@ -168,8 +165,6 @@ export const removeCartItem =
     payload: productId,
   })
 
-  localStorage.setItem("cartItems", JSON.stringify(getState().carts.cart))
-
   if (toast) {
     toast.success(`${productName || "Item"} removed from cart`)
   }
@@ -179,8 +174,11 @@ export const authenticateSigninUser=(sendData,toast,reset,navigate,setLoader)=> 
 try{
     setLoader(true)
     const {data}=await api.post("/auth/signin",sendData)
+    dispatch({type: "CLEAR_CART"})
+    localStorage.removeItem("cartItems")
     dispatch({type : "LOGIN_USER",payload : data})
     localStorage.setItem("auth",JSON.stringify(data))
+    await dispatch(getUserCart())
     reset()
     toast.success("Login Success")
     navigate("/")
@@ -377,19 +375,21 @@ export const createUserCart=(sendCartItems)=>async(dispatch,getState)=>{
     }
 }
 
-export const getUserCart=()=>async(dispatch,getState)=>{
+export const getUserCart=()=>async(dispatch)=>{
     try {
+        dispatch({type : "FETCHING_CART"})
         dispatch({type : "IS_FETCHING"})
         const {data}=await api.get("/carts/users/cart")
         dispatch ({
             type : "GET_USER_CART_PRODUCTS",
-            payload : data.products,
+            payload : data.products || [],
             totalPrice : data.totalPrice,
             cartId: data.cartId
         })
-        localStorage.setItem("cartItems",JSON.stringify(getState().carts.cart))
         dispatch({type : "IS_SUCCESS"})
     }catch(error){
+        dispatch({type:"CART_FETCH_FAILED"})
+        localStorage.removeItem("cartItems")
         dispatch({type : "IS_ERROR",
             payload : error?.response?.data?.message || "Failed to Fetch cart items",
         })

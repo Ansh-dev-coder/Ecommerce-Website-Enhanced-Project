@@ -1,20 +1,24 @@
 import { MdArrowBack, MdShoppingCart } from "react-icons/md"
 import { Link } from "react-router-dom"
 import ItemContent from "./ItemContent"
-import { useDispatch, useSelector } from "react-redux"
+import { useSelector } from "react-redux"
 import CartEmpty from "./CartEmpty"
 import { FormatPrice } from "../../utils/FormatPrice"
+import Loader from "../shared/Loader"
 
 
 
 const Cart =()=>{
 
-    const dispatch=useDispatch();
-    const {cart}=useSelector((state)=>state.carts)
+    const {cart, cartLoading}=useSelector((state)=>state.carts)
     const newCart={...cart}
     newCart.totalPrice=cart?.reduce(
         (acc,cur)=>acc + Number(cur?.specialPrice) * Number(cur?.quantity),0
     )
+    if (cartLoading) {
+        return <Loader text="Cart Loading" />
+    }
+
     if(!cart || cart.length===0){
         return <CartEmpty/>
     }

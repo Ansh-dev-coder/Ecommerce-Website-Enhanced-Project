@@ -1,11 +1,13 @@
 const intialState={
     cart :[],
     totalPrice:0,
-    cartId:null
+    cartId:null,
+    cartLoading: false,
+    cartLoaded: false,
 }
 export const CartReducer=(state=intialState,action)=>{
     switch(action.type){
-        case "ADD_CART":
+        case "ADD_CART": {
             const productToADD=action.payload;
             const  existProduct=state.cart.find((item)=>item.productId===productToADD.productId);
             if(existProduct){
@@ -27,6 +29,7 @@ export const CartReducer=(state=intialState,action)=>{
                     cart:newCart,
                 }
             }
+        }
         case "REMOVE_CART":
             return {
                 ...state,
@@ -37,11 +40,26 @@ export const CartReducer=(state=intialState,action)=>{
                 ...state,
                 cart : action.payload,
                 totalPrice : action.totalPrice,
-                cartId : action.cartId
+                cartId : action.cartId,
+                cartLoading: false,
+                cartLoaded: true,
+            }
+        case "FETCHING_CART":
+            return {
+                ...state,
+                cartLoading: true,
+            }
+        case "CART_FETCH_FAILED":
+            return {
+                cart: [],
+                totalPrice: 0,
+                cartId: null,
+                cartLoading: false,
+                cartLoaded: true,
             }
         case  "CLEAR_CART" : 
             return{
-                cart :[],totalPrice: 0,cartId : null
+                cart :[],totalPrice: 0,cartId : null,cartLoading: false,cartLoaded: false
             }    
             default:
                 break;      

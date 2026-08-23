@@ -4,7 +4,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Avatar } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { BiUser } from 'react-icons/bi';
 import { FiShoppingBag, FiLogOut, FiGrid } from 'react-icons/fi';
 import BackDrop from './BackDrop';
@@ -14,6 +14,7 @@ const UserMenu = () => {
   const open = Boolean(anchorEl);
   const { user } = useSelector((state) => state.auth);
   const isAdmin = user?.roles?.includes('ROLE_ADMIN');
+  const dispatch = useDispatch();
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -82,7 +83,9 @@ const UserMenu = () => {
         )}
         <MenuItem
           onClick={() => {
+            dispatch({type: 'CLEAR_CART'});
             localStorage.removeItem('auth');
+            localStorage.removeItem('cartItems');
             window.location.href = '/login';
             handleClose();
           }}

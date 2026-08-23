@@ -1,20 +1,27 @@
 import { Badge  } from "@mui/material";
 import { FaStore,FaShoppingCart, FaSignInAlt } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoIosMenu } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import UserMenu from "../UserMenu";
+import { getUserCart } from "../../store/actions";
 const Navbar =()=>{
 const path=useLocation().pathname
 
 const [navbarOpen,setNavbarOpen]=useState(false)
+const dispatch = useDispatch()
 
-const {cart} =useSelector((state)=>state.carts)
+const {cart, cartLoaded, cartLoading} =useSelector((state)=>state.carts)
 
 
 const {user}=useSelector((state)=>state.auth)
+useEffect(() => {
+  if (user?.id && !cartLoaded && !cartLoading) {
+    dispatch(getUserCart())
+  }
+}, [cartLoaded, cartLoading, dispatch, user?.id])
     return (
         <div className="h-[70px] bg-custom-gradient text-white z-50 flex items-center sticky  top-0">
              <div className="lg:px-14 sm:px-8 px-4 w-full flex justify-between ">
