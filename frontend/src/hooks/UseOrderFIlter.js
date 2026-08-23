@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom"
 import { useDispatch } from "react-redux";
-import { getOrdersForDashboards } from "../store/actions";
-const useOrderFilter =()=>{
+const useOrderFilter =(fetchOrders)=>{
     const [searchParams]=useSearchParams()
     const dispatch=useDispatch();
     useEffect(()=>{
@@ -15,12 +14,10 @@ const useOrderFilter =()=>{
 
 
         const queryString=params.toString()
-        console.log("Query String",queryString)
-
-         dispatch(getOrdersForDashboards(queryString))
+         dispatch(fetchOrders(queryString))
 
 
-    },[dispatch,searchParams])
+    },[dispatch,fetchOrders,searchParams])
 
    
 }

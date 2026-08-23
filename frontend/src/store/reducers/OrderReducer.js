@@ -1,6 +1,9 @@
 const initialState={
     adminOrder : null,
-    pagination : {}
+    pagination : {},
+    personalOrders: null,
+    personalPagination: {},
+    personalOrdersLoaded: false,
 }
 export const orderReducer=(state = initialState,action) =>{
 
@@ -27,6 +30,36 @@ export const orderReducer=(state = initialState,action) =>{
                         ? { ...order, orderStatus: action.payload.status }
                         : order
                 ) || []
+            }
+
+        case "GET_PERSONAL_ORDERS":
+            return {
+                ...state,
+                personalOrders: action.payload,
+                personalPagination: {
+                    pageNumber: action.pageNumber,
+                    pageSize: action.pageSize,
+                    totalElements: action.totalElements,
+                    totalPages: action.totalPages,
+                    lastPage: action.lastPage,
+                },
+                personalOrdersLoaded: true,
+            }
+
+        case "PERSONAL_ORDERS_ERROR":
+            return {
+                ...state,
+                personalOrders: [],
+                personalPagination: {},
+                personalOrdersLoaded: true,
+            }
+
+        case "CLEAR_PERSONAL_ORDERS":
+            return {
+                ...state,
+                personalOrders: null,
+                personalPagination: {},
+                personalOrdersLoaded: false,
             }
 
         default:

@@ -8,13 +8,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import { BiUser } from 'react-icons/bi';
 import { FiShoppingBag, FiLogOut, FiGrid } from 'react-icons/fi';
 import BackDrop from './BackDrop';
+import { getLoggedInUserOrders } from '../store/actions';
 
 const UserMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const { user } = useSelector((state) => state.auth);
-  const isAdmin = user?.roles?.includes('ROLE_ADMIN');
+  const { personalOrders, personalOrdersLoaded } = useSelector((state) => state.order);
   const dispatch = useDispatch();
+  const isAdmin = user?.roles?.includes('ROLE_ADMIN');
+  const showPersonalOrders = !isAdmin || (personalOrdersLoaded && personalOrders?.length > 0);
+
+  React.useEffect(() => {
+    if (isAdmin && !personalOrdersLoaded) {
+      dispatch(getLoggedInUserOrders('pageNumber=0&pageSize=10'));
+    }
+  }, [dispatch, isAdmin, personalOrdersLoaded]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -61,15 +70,17 @@ const UserMenu = () => {
           <BiUser />
           <span>{user?.username || user?.userName || 'Profile'}</span>
         </MenuItem>
-        <MenuItem
-          component={Link}
-          to="/orders"
-          onClick={handleClose}
-          className="gap-2"
-        >
-          <FiShoppingBag />
-          <span>Orders</span>
-        </MenuItem>
+        {showPersonalOrders && (
+          <MenuItem
+            component={Link}
+            to="/orders"
+            onClick={handleClose}
+            className="gap-2"
+          >
+            <FiShoppingBag />
+            <span>Orders</span>
+          </MenuItem>
+        )}
         {isAdmin && (
           <MenuItem
             component={Link}

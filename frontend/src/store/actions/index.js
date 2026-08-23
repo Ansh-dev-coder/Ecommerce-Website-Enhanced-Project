@@ -176,6 +176,7 @@ try{
     const {data}=await api.post("/auth/signin",sendData)
     dispatch({type: "CLEAR_CART"})
     localStorage.removeItem("cartItems")
+    dispatch({type: "CLEAR_PERSONAL_ORDERS"})
     dispatch({type : "LOGIN_USER",payload : data})
     localStorage.setItem("auth",JSON.stringify(data))
     await dispatch(getUserCart())
@@ -468,6 +469,29 @@ export const getOrdersForDashboards=(queryString)=>async (dispatch)=>{
         dispatch({
             type:"IS_ERROR",
             payload: error?.response?.data?.message || "failed to fetch orders data",
+        })
+    }
+}
+
+export const getLoggedInUserOrders = (queryString) => async (dispatch) => {
+    try {
+        dispatch({type:"IS_FETCHING"})
+        const {data} = await api.get(`/my-orders?${queryString}`)
+        dispatch({
+            type: "GET_PERSONAL_ORDERS",
+            payload: data.content,
+            pageNumber: data.pageNumber,
+            pageSize: data.pageSize,
+            totalElements: data.totalElements,
+            totalPages: data.totalPages,
+            lastPage: data.lastPage,
+        })
+        dispatch({type:"IS_SUCCESS"})
+    } catch (error) {
+        dispatch({type:"PERSONAL_ORDERS_ERROR"})
+        dispatch({
+            type:"IS_ERROR",
+            payload: error?.response?.data?.message || "failed to fetch your orders",
         })
     }
 }

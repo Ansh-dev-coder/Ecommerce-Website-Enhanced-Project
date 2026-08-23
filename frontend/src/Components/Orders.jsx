@@ -1,21 +1,35 @@
+import React from 'react'
+import { FaShoppingCart } from 'react-icons/fa'
 import { useSelector } from 'react-redux'
+import { getLoggedInUserOrders } from '../store/actions'
+import useOrderFilter from '../hooks/UseOrderFIlter'
+import OrderTable from './Admin/Orders/OrderTable'
+import Loader from './shared/Loader'
 
 const Orders = () => {
-  const { user } = useSelector((state) => state.auth)
+  const { personalOrders, personalPagination, personalOrdersLoaded } = useSelector((state) => state.order)
 
-  return (
-    <div className="min-h-screen bg-slate-50 p-6">
-      <div className="mx-auto max-w-3xl rounded-3xl bg-white p-8 shadow-xl border border-slate-200">
-        <h1 className="text-3xl font-bold text-slate-900 mb-4">My Orders</h1>
-        <p className="text-slate-600 mb-6">
-          Orders for <span className="font-semibold text-slate-900">{user?.username || user?.userName || 'your account'}</span> will appear here.
-        </p>
-        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-slate-500 text-center">
-          No orders found yet. Browse products and place your first order.
+  useOrderFilter(getLoggedInUserOrders)
+
+  const emptyOrders = !personalOrders || personalOrders.length === 0
+
+  if (!personalOrdersLoaded) {
+    return <Loader text="Orders Loading" />
+  }
+
+  if (emptyOrders) {
+    return (
+      <div className="min-h-screen bg-slate-50 p-6">
+        <div className="mx-auto max-w-3xl rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-xl">
+          <FaShoppingCart className="mx-auto mb-4 text-3xl text-slate-400" />
+          <h1 className="text-2xl font-bold text-slate-900">No Orders Found</h1>
+          <p className="mt-2 text-slate-600">You haven't placed any orders yet.</p>
         </div>
       </div>
-    </div>
-  )
+    )
+  }
+
+  return <OrderTable orders={personalOrders} pagination={personalPagination} personalOrders />
 }
 
 export default Orders

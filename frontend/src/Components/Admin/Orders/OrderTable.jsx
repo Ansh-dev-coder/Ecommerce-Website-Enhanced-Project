@@ -5,7 +5,7 @@ import Modal from '../../shared/Modal';
 import { getOrderColumns } from '../../helper/tableColumn';
 import UpdateOrderForm from './UpdateOrderForm';
 
-const OrderTable = ({adminOrders,pagination}) => {
+const OrderTable = ({ orders, pagination, personalOrders = false }) => {
     const navigate=useNavigate();
     const [currentPage,setCurrentPage]=useState(pagination?.pageNumber + 1 || 1)
     const [selectedOrder, setSelectedOrder] = useState(null)
@@ -14,13 +14,18 @@ const OrderTable = ({adminOrders,pagination}) => {
     const [searchParams]=useSearchParams()
     const params=new URLSearchParams(searchParams)
     const pathname=useLocation().pathname
+    const canUpdateStatus = !personalOrders
+    const heading = personalOrders ? 'My Orders' : 'All Orders'
+    const description = personalOrders
+      ? 'View and track your orders'
+      : 'Manage and monitor all customer orders'
 
     const columns = useMemo(() => getOrderColumns((order) => {
       setSelectedOrder(order)
       setIsEditModalOpen(true)
-    }), [])
+    }, canUpdateStatus, !personalOrders, personalOrders), [canUpdateStatus, personalOrders])
    
-    const tableRecords=adminOrders?.map((item)=>{
+    const tableRecords=orders?.map((item)=>{
         return {
             id:item.orderId,
             email : item.email,
@@ -41,11 +46,11 @@ const OrderTable = ({adminOrders,pagination}) => {
       <div className="min-h-screen bg-slate-100 p-6 md:p-8">
         <div className="mb-6">
           <h1 className="text-3xl font-bold tracking-tight text-slate-800">
-            All Orders
+            {heading}
           </h1>
 
           <p className="mt-1 text-sm text-slate-500">
-            Manage and monitor all customer orders
+            {description}
           </p>
         </div>
 
@@ -66,7 +71,7 @@ const OrderTable = ({adminOrders,pagination}) => {
               }}
               onPaginationModelChange={handlePaginationChange}
               pageSizeOptions={[pagination?.pageSize || 10]}
-              checkboxSelection
+              checkboxSelection={!personalOrders}
               disableRowSelectionOnClick
               disableColumnResize
               pagination
@@ -79,7 +84,7 @@ const OrderTable = ({adminOrders,pagination}) => {
           </div>
         </div>
 
-        {selectedOrder && (
+        {canUpdateStatus && selectedOrder && (
           <Modal open={isEditModalOpen} setOpen={setIsEditModalOpen} title="Update Order Status">
             <UpdateOrderForm
               setOpen={setIsEditModalOpen}

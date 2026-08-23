@@ -3,11 +3,12 @@ import { FaShoppingCart } from 'react-icons/fa';
 import OrderTable from './OrderTable';
 import { useSelector } from 'react-redux';
 import useOrderFilter from '../../../hooks/UseOrderFIlter';
+import { getOrdersForDashboards } from '../../../store/actions';
 
 const Order = () => {
     const {adminOrder,pagination}=useSelector((state)=>state.order)
    
-useOrderFilter()
+useOrderFilter(getOrdersForDashboards)
 
     const emptyOrder=!adminOrder || adminOrder?.length===0;
   return (
@@ -21,7 +22,7 @@ useOrderFilter()
 
     ):
     (<div>
-        <OrderTable  adminOrders={adminOrder} pagination={pagination} />
+        <OrderTable orders={adminOrder} pagination={pagination} />
 
     </div>)}
     

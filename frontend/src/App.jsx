@@ -11,7 +11,8 @@ import { Toaster } from 'react-hot-toast'
 import Cart from './Components/cart/Cart'
 import Login from './Components/auth/Login'
 import Profile from './Components/Profile'
-import Orders from './Components/Admin/Orders/Order'
+import AdminOrders from './Components/Admin/Orders/Order'
+import Orders from './Components/Orders'
 import PrivateRoute from './Components/PrivateRoute'
 import Register from './Components/auth/Register'
 import Checkout from './Checkout/Checkout'
@@ -47,7 +48,7 @@ function App() {
           <Route path='/' element={<PrivateRoute  adminOnly />}>
             <Route path='/admin' element={<AdminLayout/>}>
               <Route path='' element={<Dashboard/>}/>
-              <Route path='order'  element={<Orders/>} />
+              <Route path='order'  element={<AdminOrders/>} />
               <Route  path='products' element={<AdminProducts/>} />
               <Route path='categories' element={<Category/>} />
               <Route  path='sellers' element={<Seller/>} />
