@@ -7,6 +7,7 @@ import com.ecommerce.project.payload.OrderDTO;
 import com.ecommerce.project.payload.OrderItemDTO;
 import com.ecommerce.project.payload.OrderResponse;
 import com.ecommerce.project.repositories.*;
+import com.ecommerce.project.util.AuthUtil;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -42,6 +42,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private CartService cartService;
+    @Autowired
+    private AuthUtil authUtil;
 
     @Autowired
     private ModelMapper mapper;
@@ -69,10 +71,15 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalPrice(cart.getTotalPrice());
         order.setOrderDate(LocalDate.now());
         order.setOrderStatus("Accepted");
+        User user= authUtil.loggedInUser();
+        System.out.println("LOGGED USER ID = " + user.getUserId());
+        System.out.println("LOGGED USER EMAIL = " + user.getEmail());
+        order.setUser(user);
         Payment payment=new Payment(paymentMethod,pgPaymentId,pgStatus,pgResponseMessage,pgName);
         payment.setOrder(order);
         payment=  paymentRepository.save(payment);
         order.setPayment(payment);
+
         Order savedOrder=orderRepository.save(order);
        List<CartItem> cartItems=cart.getCartItem();
        if(cartItems==null || cartItems.isEmpty())
@@ -139,5 +146,29 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderStatus(status);
         orderRepository.save(order);
         return mapper.map(order,OrderDTO.class);
+    }
+
+    @Override
+    public OrderResponse getLoggedInUserOrders(User user, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        Sort sortByAndOrder=sortOrder.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageDetails=PageRequest.of(pageNumber,pageSize,sortByAndOrder);
+        Page<Order> pageOrder=orderRepository.findByUser(user,pageDetails);
+        List<Order> userOrderDetails=pageOrder.getContent();
+
+
+        //List<Order> userOrders=orderRepository.findByUser(user);
+        List<OrderDTO> orderDTOS=userOrderDetails.stream().map(
+                order ->  mapper.map(order,OrderDTO.class)
+        ).toList();
+        OrderResponse orderResponse=new OrderResponse();
+        orderResponse.setContent(orderDTOS);
+        orderResponse.setPageNumber(pageOrder.getNumber());
+        orderResponse.setPageSize(pageOrder.getSize());
+        orderResponse.setTotalElements(pageOrder.getTotalElements());
+        orderResponse.setTotalPages(pageOrder.getTotalPages());
+        orderResponse.setLastPage(pageOrder.isLast());
+        return orderResponse;
     }
 }
