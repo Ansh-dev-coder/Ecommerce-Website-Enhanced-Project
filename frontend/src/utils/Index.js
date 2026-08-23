@@ -1,5 +1,9 @@
 import { FaBoxOpen, FaHome, FaShoppingCart, FaStore, FaThList } from "react-icons/fa"
-import { href } from "react-router-dom"
+
+export const dashboardRoles = {
+  ADMIN: "ROLE_ADMIN",
+  SELLER: "ROLE_SELLER",
+}
 
 export const bannerList=[
     {
@@ -28,25 +32,39 @@ export const adminNavigation=[
   {name : "Dashboard",
     href : "/admin" ,
      icon :FaHome , 
-     current : true }, 
+     current : true,
+     allowedRoles: [dashboardRoles.ADMIN, dashboardRoles.SELLER],
+    },
      {
       name : "Orders",
       href : "/admin/order",
-      icon : FaShoppingCart
+      icon : FaShoppingCart,
+      allowedRoles: [dashboardRoles.ADMIN, dashboardRoles.SELLER],
      } ,
      {
       name :"Product",
       href : "/admin/products",
       icon : FaBoxOpen,
+      allowedRoles: [dashboardRoles.ADMIN, dashboardRoles.SELLER],
      },
      {
       name : "Categories",
       href : "/admin/categories",
-      icon : FaThList
+      icon : FaThList,
+      allowedRoles: [dashboardRoles.ADMIN],
      },
      {
       name : "Sellers",
       href: "/admin/sellers",
-      icon : FaStore
+      icon : FaStore,
+      allowedRoles: [dashboardRoles.ADMIN],
      }
 ]
+
+export const getDashboardNavigation = (roles) => {
+  const assignedRoles = Array.isArray(roles) ? roles : []
+
+  return adminNavigation.filter((item) =>
+    item.allowedRoles.some((role) => assignedRoles.includes(role))
+  )
+}

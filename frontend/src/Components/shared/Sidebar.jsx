@@ -2,11 +2,13 @@ import React from 'react'
 import { FaTachometerAlt } from 'react-icons/fa';
 import { useLocation, Link } from 'react-router-dom';
 import classNames from 'classnames';
-import { adminNavigation } from '../../utils/Index';
+import { useSelector } from 'react-redux';
+import { getDashboardNavigation } from '../../utils/Index';
 
 const Sidebar = () => {
     const pathName = useLocation().pathname;
-    const sideBarLayout = adminNavigation;
+    const { user } = useSelector((state) => state.auth);
+    const sideBarLayout = getDashboardNavigation(user?.roles);
 
     return (
         <aside className="min-h-screen w-full max-w-xs bg-slate-900 text-slate-100 shadow-xl">

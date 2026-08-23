@@ -6,13 +6,14 @@ import { Avatar } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { BiUser } from 'react-icons/bi';
-import { FiShoppingBag, FiLogOut } from 'react-icons/fi';
+import { FiShoppingBag, FiLogOut, FiGrid } from 'react-icons/fi';
 import BackDrop from './BackDrop';
 
 const UserMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const { user } = useSelector((state) => state.auth);
+  const isAdmin = user?.roles?.includes('ROLE_ADMIN');
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -68,6 +69,17 @@ const UserMenu = () => {
           <FiShoppingBag />
           <span>Orders</span>
         </MenuItem>
+        {isAdmin && (
+          <MenuItem
+            component={Link}
+            to="/admin"
+            onClick={handleClose}
+            className="gap-2"
+          >
+            <FiGrid />
+            <span>Admin Panel</span>
+          </MenuItem>
+        )}
         <MenuItem
           onClick={() => {
             localStorage.removeItem('auth');
