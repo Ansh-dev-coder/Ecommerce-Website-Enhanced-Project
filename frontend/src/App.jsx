@@ -22,6 +22,9 @@ import Dashboard from './Components/Admin/Dashboard/Dashboard'
 import AdminProducts from './Components/Admin/Products/AdminProducts'
 import Category from './Components/Admin/Categories/Category'
 import Seller from './Components/Admin/Sellers/Seller'
+import SellerDashboard from './Components/Seller/Dashboard/SellerDashboard'
+import SellerProducts from './Components/Seller/Products/SellerProducts'
+import SellerOrders from './Components/Seller/Orders/SellerOrders'
 
 function App() {
   return (
@@ -55,6 +58,14 @@ function App() {
 
             </Route>
 
+          </Route>
+
+          <Route path='/' element={<PrivateRoute sellerOnly />}>
+            <Route path='/seller' element={<AdminLayout panelType="seller" />}>
+              <Route path='' element={<SellerDashboard />} />
+              <Route path='products' element={<SellerProducts />} />
+              <Route path='orders' element={<SellerOrders />} />
+            </Route>
           </Route>
         </Routes>
       </Router>
