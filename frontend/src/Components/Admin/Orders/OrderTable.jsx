@@ -5,7 +5,7 @@ import Modal from '../../shared/Modal';
 import { getOrderColumns } from '../../helper/tableColumn';
 import UpdateOrderForm from './UpdateOrderForm';
 
-const OrderTable = ({ orders, pagination, personalOrders = false }) => {
+const OrderTable = ({ orders, pagination, personalOrders = false, sellerOrders = false }) => {
     const navigate=useNavigate();
     const [currentPage,setCurrentPage]=useState(pagination?.pageNumber + 1 || 1)
     const [selectedOrder, setSelectedOrder] = useState(null)
@@ -14,16 +14,18 @@ const OrderTable = ({ orders, pagination, personalOrders = false }) => {
     const [searchParams]=useSearchParams()
     const params=new URLSearchParams(searchParams)
     const pathname=useLocation().pathname
-    const canUpdateStatus = !personalOrders
-    const heading = personalOrders ? 'My Orders' : 'All Orders'
-    const description = personalOrders
+    const canUpdateStatus = !personalOrders && !sellerOrders
+    const heading = sellerOrders ? 'Seller Orders' : personalOrders ? 'My Orders' : 'All Orders'
+    const description = sellerOrders
+      ? 'View orders connected to your seller products'
+      : personalOrders
       ? 'View and track your orders'
       : 'Manage and monitor all customer orders'
 
     const columns = useMemo(() => getOrderColumns((order) => {
       setSelectedOrder(order)
       setIsEditModalOpen(true)
-    }, canUpdateStatus, !personalOrders, personalOrders), [canUpdateStatus, personalOrders])
+    }, canUpdateStatus, !personalOrders, personalOrders || sellerOrders), [canUpdateStatus, personalOrders, sellerOrders])
    
     const tableRecords=orders?.map((item)=>{
         return {
@@ -71,7 +73,7 @@ const OrderTable = ({ orders, pagination, personalOrders = false }) => {
               }}
               onPaginationModelChange={handlePaginationChange}
               pageSizeOptions={[pagination?.pageSize || 10]}
-              checkboxSelection={!personalOrders}
+              checkboxSelection={!personalOrders && !sellerOrders}
               disableRowSelectionOnClick
               disableColumnResize
               pagination

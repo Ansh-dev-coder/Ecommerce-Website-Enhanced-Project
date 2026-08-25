@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { MdAddShoppingCart } from 'react-icons/md'
 import toast from 'react-hot-toast'
@@ -7,7 +7,7 @@ import InputField from '../../shared/InputField'
 import Spinners from '../../shared/Spinners'
 import { fetchCategories, addProduct, updateProduct } from '../../../store/actions'
 
-const AddProductForm = ({ product, setOpen, update = false }) => {
+const AddProductForm = ({ product, setOpen, update = false, integrationPending = false }) => {
   const dispatch = useDispatch()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -19,7 +19,6 @@ const AddProductForm = ({ product, setOpen, update = false }) => {
     reset,
     setValue,
     handleSubmit,
-    control,
     formState: { errors },
   } = useForm({
     mode: 'onTouched',
@@ -34,10 +33,11 @@ const AddProductForm = ({ product, setOpen, update = false }) => {
     },
   })
 
-  // Fetch categories on component mount
   useEffect(() => {
-    dispatch(fetchCategories())
-  }, [dispatch])
+    if (!integrationPending) {
+      dispatch(fetchCategories())
+    }
+  }, [dispatch, integrationPending])
 
   // Populate form if editing existing product
   useEffect(() => {
@@ -58,7 +58,7 @@ const AddProductForm = ({ product, setOpen, update = false }) => {
       setIsSubmitting(true)
 
       // Validate required fields
-      if (!data.productName || !data.description || !data.price || !data.categoryId || !data.quantity) {
+      if (!data.productName || !data.description || !data.price || (!integrationPending && !data.categoryId) || !data.quantity) {
         toast.error('Please fill in all required fields')
         return
       }
@@ -72,6 +72,12 @@ const AddProductForm = ({ product, setOpen, update = false }) => {
         specialPrice: parseFloat(data.specialPrice || 0),
         quantity: parseInt(data.quantity),
         categoryId: data.categoryId,
+      }
+
+      if (integrationPending) {
+        toast.success('Seller product API integration point is ready. Backend connection pending.')
+        setOpen?.(false)
+        return
       }
 
       if (update) {
@@ -100,7 +106,9 @@ const AddProductForm = ({ product, setOpen, update = false }) => {
           <div>
             <h1 className="text-3xl font-bold text-slate-900">Add New Product</h1>
             <p className="mt-2 text-sm text-slate-500">
-              Fill in the product details to add a new item to your inventory.
+              {integrationPending
+                ? 'Prepare the product details for your seller inventory. Saving will be connected when the backend API is available.'
+                : 'Fill in the product details to add a new item to your inventory.'}
             </p>
           </div>
         ) : (
@@ -133,12 +141,15 @@ const AddProductForm = ({ product, setOpen, update = false }) => {
             </label>
             <select
               {...register('categoryId', {
-                required: 'Category is required',
+                required: integrationPending ? false : 'Category is required',
               })}
-              disabled={categoryLoading}
+              disabled={categoryLoading || integrationPending}
               className="w-full rounded-lg border border-slate-300 px-4 py-2 text-slate-900 placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 disabled:cursor-not-allowed disabled:bg-slate-100"
             >
               <option value="">Select a category</option>
+              {integrationPending && (
+                <option value="seller-api-pending">Seller API pending</option>
+              )}
               {categories && categories.map((cat) => (
                 <option key={cat.categoryId} value={cat.categoryId}>
                   {cat.categoryName}

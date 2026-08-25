@@ -14,16 +14,25 @@ import AddProductForm from './AddProductForm';
 import ProductImageUpdate from './ProductImageUpdate';
 import { deleteProduct } from '../../../store/actions';
 
-const AdminProducts = () => {
+const AdminProducts = ({
+  panelType = "admin",
+  fetchProducts = true,
+  productsOverride,
+  paginationOverride,
+  integrationPending = false,
+}) => {
   const dispatch = useDispatch();
-  const { products, pagination } = useSelector((state) => state.products);
+  const { products: storeProducts, pagination: storePagination } = useSelector((state) => state.products);
+  const products = productsOverride ?? storeProducts;
+  const pagination = paginationOverride ?? storePagination;
+  const isSellerPanel = panelType === "seller";
 
   const [paginationModel, setPaginationModel] = useState({
     page: pagination?.pageNumber ?? 0,
     pageSize: pagination?.pageSize,
   });
 
-  useDashboardProductFilter(paginationModel.page, paginationModel.pageSize);
+  useDashboardProductFilter(paginationModel.page, paginationModel.pageSize, fetchProducts);
 
   // Keep the controlled DataGrid model aligned with the server response.
   useEffect(() => {
@@ -106,6 +115,13 @@ const AdminProducts = () => {
       return
     }
 
+    if (integrationPending) {
+      toast.success('Seller product delete API integration point is ready. Backend connection pending.')
+      setOpenDeleteModal(false)
+      setSelectedDeleteProduct(null)
+      return
+    }
+
     dispatch(deleteProduct(
       selectedDeleteProduct.productId,
       toast,
@@ -158,7 +174,16 @@ const AdminProducts = () => {
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="flex justify-between items-center mb-8 bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold text-gray-800">Products Management</h1>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">
+            {isSellerPanel ? "Seller Products" : "Products Management"}
+          </h1>
+          {isSellerPanel && (
+            <p className="mt-1 text-sm text-slate-500">
+              Manage your seller inventory here. Data loading will connect to the seller products API later.
+            </p>
+          )}
+        </div>
         <button 
           onClick={handleAddNew}
           className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-semibold transition duration-300 flex items-center gap-2"
@@ -168,7 +193,7 @@ const AdminProducts = () => {
         </button>
       </div>
 
-      {!emptyProduct && <h1>All Products</h1>}
+      {!emptyProduct && <h1>{isSellerPanel ? "My Products" : "All Products"}</h1>}
 
       {isLoading ? (
         <Loader />
@@ -177,7 +202,12 @@ const AdminProducts = () => {
           {emptyProduct ? (
             <div>
               <FaBoxOpen />
-              <h2>No Product exist</h2>
+              <h2>{isSellerPanel ? "No seller products loaded yet" : "No Product exist"}</h2>
+              {isSellerPanel && (
+                <p className="mt-2 text-sm text-slate-500">
+                  This page is ready for the seller-scoped products API.
+                </p>
+              )}
             </div>
           ) : (
             <div>
@@ -220,6 +250,7 @@ const AdminProducts = () => {
           setOpen={setOpenProductModal}
           product={selectedProduct}
           update={isEditMode}
+          integrationPending={integrationPending}
         />
       </Modal>
 
@@ -248,6 +279,7 @@ const AdminProducts = () => {
           product={selectedImageProduct}
           setOpen={handleImageModalOpen}
           queryString={getDashboardProductQueryString()}
+          integrationPending={integrationPending}
         />
       </Modal>
     </div>

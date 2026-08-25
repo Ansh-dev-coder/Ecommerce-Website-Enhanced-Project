@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import Spinners from '../../shared/Spinners'
 import { updateProductImage } from '../../../store/actions'
 
-const ProductImageUpdate = ({ product, setOpen, queryString }) => {
+const ProductImageUpdate = ({ product, setOpen, queryString, integrationPending = false }) => {
   const dispatch = useDispatch()
   const [selectedImage, setSelectedImage] = useState(null)
   const [previewImage, setPreviewImage] = useState(product?.image || '')
@@ -59,6 +59,12 @@ const ProductImageUpdate = ({ product, setOpen, queryString }) => {
 
     if (!product?.productId) {
       setError('Product details are missing. Please try again.')
+      return
+    }
+
+    if (integrationPending) {
+      toast.success('Seller product image API integration point is ready. Backend connection pending.')
+      setOpen?.(false)
       return
     }
 
