@@ -33,19 +33,19 @@ export const adminNavigation=[
     href : "/admin" ,
      icon :FaHome , 
      current : true,
-     allowedRoles: [dashboardRoles.ADMIN, dashboardRoles.SELLER],
+     allowedRoles: [dashboardRoles.ADMIN],
     },
      {
       name : "Orders",
       href : "/admin/order",
       icon : FaShoppingCart,
-      allowedRoles: [dashboardRoles.ADMIN, dashboardRoles.SELLER],
+      allowedRoles: [dashboardRoles.ADMIN],
      } ,
      {
       name :"Product",
       href : "/admin/products",
       icon : FaBoxOpen,
-      allowedRoles: [dashboardRoles.ADMIN, dashboardRoles.SELLER],
+      allowedRoles: [dashboardRoles.ADMIN],
      },
      {
       name : "Categories",
@@ -61,10 +61,33 @@ export const adminNavigation=[
      }
 ]
 
-export const getDashboardNavigation = (roles) => {
-  const assignedRoles = Array.isArray(roles) ? roles : []
+export const sellerNavigation = [
+  {
+    name: "Dashboard",
+    href: "/seller",
+    icon: FaHome,
+    current: true,
+    allowedRoles: [dashboardRoles.SELLER],
+  },
+  {
+    name: "Products",
+    href: "/seller/products",
+    icon: FaBoxOpen,
+    allowedRoles: [dashboardRoles.SELLER],
+  },
+  {
+    name: "Orders",
+    href: "/seller/orders",
+    icon: FaShoppingCart,
+    allowedRoles: [dashboardRoles.SELLER],
+  },
+]
 
-  return adminNavigation.filter((item) =>
+export const getDashboardNavigation = (roles, panelType = "admin") => {
+  const assignedRoles = Array.isArray(roles) ? roles : []
+  const navigation = panelType === "seller" ? sellerNavigation : adminNavigation
+
+  return navigation.filter((item) =>
     item.allowedRoles.some((role) => assignedRoles.includes(role))
   )
 }

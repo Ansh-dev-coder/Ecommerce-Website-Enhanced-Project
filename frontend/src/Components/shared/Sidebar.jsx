@@ -5,17 +5,18 @@ import classNames from 'classnames';
 import { useSelector } from 'react-redux';
 import { getDashboardNavigation } from '../../utils/Index';
 
-const Sidebar = () => {
+const Sidebar = ({ panelType = "admin" }) => {
     const pathName = useLocation().pathname;
     const { user } = useSelector((state) => state.auth);
-    const sideBarLayout = getDashboardNavigation(user?.roles);
+    const sideBarLayout = getDashboardNavigation(user?.roles, panelType);
+    const panelTitle = panelType === "seller" ? "Seller Panel" : "Admin Panel";
 
     return (
         <aside className="min-h-screen w-full max-w-xs bg-slate-900 text-slate-100 shadow-xl">
             <div className="border-b border-slate-800 px-6 py-5">
                 <div className="flex items-center gap-3">
                     <FaTachometerAlt className="h-5 w-5 text-cyan-400" />
-                    <h1 className="text-lg font-semibold">Admin Panel</h1>
+                    <h1 className="text-lg font-semibold">{panelTitle}</h1>
                 </div>
             </div>
 

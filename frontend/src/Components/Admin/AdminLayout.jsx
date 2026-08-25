@@ -7,7 +7,7 @@ import { Description, Dialog, DialogBackdrop, DialogPanel, DialogTitle, Transiti
 import { RxCross1 } from 'react-icons/rx';
 import { FaBars } from 'react-icons/fa';
 
-const AdminLayout = () => {
+const AdminLayout = ({ panelType = "admin" }) => {
     let [sidebarOpen, setSidebarOpen] = useState(false);
   return (
     <div>
@@ -35,12 +35,12 @@ const AdminLayout = () => {
                 </button>
             </div>
            </TransitionChild>
-           <Sidebar />
+           <Sidebar panelType={panelType} />
           </DialogPanel>
         </div>
       </Dialog>
         <div className='hidden xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-72 xl:flex-col'>
-            <Sidebar />
+            <Sidebar panelType={panelType} />
         </div>
 
         <div className='xl:pl-72'>
