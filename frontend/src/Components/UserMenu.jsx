@@ -6,7 +6,7 @@ import { Avatar } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { BiUser } from 'react-icons/bi';
-import { FiShoppingBag, FiLogOut, FiGrid } from 'react-icons/fi';
+import { FiShoppingBag, FiLogOut, FiGrid, FiBriefcase } from 'react-icons/fi';
 import BackDrop from './BackDrop';
 import { getLoggedInUserOrders } from '../store/actions';
 
@@ -17,6 +17,7 @@ const UserMenu = () => {
   const { personalOrders, personalOrdersLoaded } = useSelector((state) => state.order);
   const dispatch = useDispatch();
   const isAdmin = user?.roles?.includes('ROLE_ADMIN');
+  const isSeller = user?.roles?.includes('ROLE_SELLER') && !isAdmin;
   const showPersonalOrders = !isAdmin || (personalOrdersLoaded && personalOrders?.length > 0);
 
   React.useEffect(() => {
@@ -90,6 +91,17 @@ const UserMenu = () => {
           >
             <FiGrid />
             <span>Admin Panel</span>
+          </MenuItem>
+        )}
+        {isSeller && (
+          <MenuItem
+            component={Link}
+            to="/seller"
+            onClick={handleClose}
+            className="gap-2"
+          >
+            <FiBriefcase />
+            <span>Seller Panel</span>
           </MenuItem>
         )}
         <MenuItem
