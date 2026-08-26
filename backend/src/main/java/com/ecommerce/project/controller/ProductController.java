@@ -39,6 +39,18 @@ public class ProductController {
     }
 
     @Tag(name = "Product APIs",description = "APIs for managing Products")
+    @Operation(summary = "Seller add product",description = "Api for a seller to add their own product")
+    @ApiResponses({@ApiResponse(responseCode = "201",description = "Created Successfully"),
+            @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
+            @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
+    @PostMapping("seller/categories/{categoryId}/product")
+    public ResponseEntity<ProductDTO> addSellerProduct(@Valid @RequestBody ProductDTO productDTO,
+                                                       @PathVariable Long categoryId) {
+        ProductDTO addProduct = productService.addSellerProduct(categoryId, productDTO);
+        return new ResponseEntity<>(addProduct, HttpStatus.CREATED);
+    }
+
+    @Tag(name = "Product APIs",description = "APIs for managing Products")
     @Operation(summary = "Getting all the products",description = "Api to get all the product")
     @ApiResponses({@ApiResponse(responseCode = "200",description = "Get Successfully"),
             @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
@@ -101,6 +113,18 @@ public class ProductController {
     }
 
     @Tag(name = "Product APIs",description = "APIs for managing Products")
+    @Operation(summary = "Seller update product",description = "Api for a seller to update only their own product")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Updated Successfully"),
+            @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
+            @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
+    @PutMapping("seller/products/{productId}")
+    public ResponseEntity<ProductDTO> updateSellerProduct(@Valid @RequestBody ProductDTO productDTO,@PathVariable Long productId)
+    {
+        ProductDTO updateProduct=productService.updateSellerProduct(productId,productDTO);
+        return new ResponseEntity<>(updateProduct,HttpStatus.OK);
+    }
+
+    @Tag(name = "Product APIs",description = "APIs for managing Products")
     @Operation(summary = "Updating products image",description = "Api to update the product")
     @ApiResponses({@ApiResponse(responseCode = "200",description = "Image updated Successfully"),
             @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
@@ -109,6 +133,18 @@ public class ProductController {
     public ResponseEntity<ProductDTO> updateProductImage(@PathVariable Long productId,
                                                          @RequestParam("image") MultipartFile image) throws IOException {
         ProductDTO updateProduct=productService.updateProductImage(productId,image);
+        return new ResponseEntity<>(updateProduct, HttpStatus.OK);
+    }
+
+    @Tag(name = "Product APIs",description = "APIs for managing Products")
+    @Operation(summary = "Seller update product image",description = "Api for a seller to update only their own product image")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Image updated Successfully"),
+            @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
+            @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
+    @PutMapping("seller/products/{productId}/image")
+    public ResponseEntity<ProductDTO> updateSellerProductImage(@PathVariable Long productId,
+                                                               @RequestParam("image") MultipartFile image) throws IOException {
+        ProductDTO updateProduct=productService.updateSellerProductImage(productId,image);
         return new ResponseEntity<>(updateProduct, HttpStatus.OK);
     }
 
@@ -124,6 +160,18 @@ public class ProductController {
         return  new ResponseEntity<>(deleteProduct,HttpStatus.OK);
     }
 
+    @Tag(name = "Product APIs",description = "APIs for managing Products")
+    @Operation(summary = "Seller delete product",description = "Api for a seller to delete only their own product")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Deleted Successfully"),
+            @ApiResponse(responseCode = "400",description = "Invalid Input",content = @Content),
+            @ApiResponse(responseCode = "500",description = "Internal Server error",content = @Content)})
+    @DeleteMapping("seller/products/{productId}")
+    public ResponseEntity<ProductDTO> deleteSellerProduct(@PathVariable Long productId)
+    {
+        ProductDTO deleteProduct=productService.deleteSellerProduct(productId);
+        return  new ResponseEntity<>(deleteProduct,HttpStatus.OK);
+    }
+
     @GetMapping("admin/products")
     public ResponseEntity<ProductResponse> getAllProductsForAdmin(
 
@@ -134,5 +182,17 @@ public class ProductController {
     {
       ProductResponse productResponse=productService.getAllProductsForAdmin(pageNumber,pageSize,sortBy,sortOrder);
       return new ResponseEntity<>(productResponse,HttpStatus.OK);
+    }
+
+    @GetMapping("seller/products")
+    public ResponseEntity<ProductResponse> getAllProductsForSeller(
+
+            @RequestParam(name = "pageNumber",defaultValue = AppConst.PAGE_NUMBER,required = false)Integer pageNumber,
+            @RequestParam(name = "pageSize",defaultValue = AppConst.PAGE_SIZE,required = false)Integer pageSize,
+            @RequestParam(name = "sortBy",defaultValue = AppConst.SORT_PRODUCT_BY,required = false)String sortBy,
+            @RequestParam(name = "sortOrder",defaultValue = AppConst.SORT_DIR,required = false)String sortOrder)
+    {
+        ProductResponse productResponse=productService.getAllProductsForSeller(pageNumber,pageSize,sortBy,sortOrder);
+        return new ResponseEntity<>(productResponse,HttpStatus.OK);
     }
 }

@@ -6,6 +6,7 @@ import com.ecommerce.project.exceptions.ResourceNotFoundException;
 import com.ecommerce.project.model.Cart;
 import com.ecommerce.project.model.Category;
 import com.ecommerce.project.model.Product;
+import com.ecommerce.project.model.User;
 import com.ecommerce.project.payload.CartDTO;
 import com.ecommerce.project.payload.ProductDTO;
 import com.ecommerce.project.payload.ProductResponse;
@@ -78,17 +79,22 @@ public class ProductServiceImpl implements ProductService{
 
         if (isProductNotPresent){
             Product product = modelMapper.map(productDTO, Product.class);
-        product.setImage("default png");
-        product.setCategory(category);
-        product.setUser(authUtil.loggedInUser());
-        double specialPrice = product.getPrice() -
-                ((product.getDiscount() * 0.01) * product.getPrice());
-        product.setSpecialPrice(specialPrice);
-        Product savedProduct = productRepository.save(product);
-        return modelMapper.map(savedProduct, ProductDTO.class);
+            product.setImage("default png");
+            product.setCategory(category);
+            product.setUser(authUtil.loggedInUser());
+            double specialPrice = product.getPrice() -
+                    ((product.getDiscount() * 0.01) * product.getPrice());
+            product.setSpecialPrice(specialPrice);
+            Product savedProduct = productRepository.save(product);
+            return modelMapper.map(savedProduct, ProductDTO.class);
     }else {
             throw new ApiException("Product with this name is present");
         }
+    }
+
+    @Override
+    public ProductDTO addSellerProduct(Long categoryId, ProductDTO productDTO) {
+        return addProduct(categoryId, productDTO);
     }
     @Override
     public ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String keyword, String category) {
@@ -188,6 +194,16 @@ public class ProductServiceImpl implements ProductService{
          Product savedProductFromDB=productRepository.findById(productId)
                  .orElseThrow(()->new ResourceNotFoundException("Product","productId",productId));
 
+        return updateProductDetails(savedProductFromDB, productDTO);
+    }
+
+    @Override
+    public ProductDTO updateSellerProduct(Long productId, ProductDTO productDTO) {
+        Product sellerProduct = getSellerOwnedProduct(productId);
+        return updateProductDetails(sellerProduct, productDTO);
+    }
+
+    private ProductDTO updateProductDetails(Product savedProductFromDB, ProductDTO productDTO) {
         if (productDTO.getProductName().length()<=3)
         {
             throw new ApiException("product name should be more then 3 characters");
@@ -205,7 +221,7 @@ public class ProductServiceImpl implements ProductService{
         savedProductFromDB.setSpecialPrice(product.getSpecialPrice());
        Product updateProduct= productRepository.save(savedProductFromDB);
 
-       List<Cart> carts=cartRepository.findCartByProductId(productId);
+       List<Cart> carts=cartRepository.findCartByProductId(savedProductFromDB.getProductId());
        List<CartDTO> cartDTOS=carts.stream().map(cart ->{
            CartDTO cartDTO=modelMapper.map(cart,CartDTO.class);
           List<ProductDTO> productDTOS=cart.getCartItem().stream().map(cartItem ->
@@ -214,26 +230,48 @@ public class ProductServiceImpl implements ProductService{
           cartDTO.setProducts(productDTOS);
           return cartDTO;
        }).toList();
-       cartDTOS.forEach(cartDTO -> cartService.updateProductInCarts(cartDTO.getCartId(),productId));
+       cartDTOS.forEach(cartDTO -> cartService.updateProductInCarts(cartDTO.getCartId(),savedProductFromDB.getProductId()));
         return modelMapper.map(updateProduct, ProductDTO.class);
     }
+
     @Override
     public ProductDTO deleteProduct(Long productId) {
         Product product=productRepository.findById(productId)
                 .orElseThrow(()->new ResourceNotFoundException("Product","productId",productId));
 
+        return deleteProductFromStore(product);
+    }
+
+    @Override
+    public ProductDTO deleteSellerProduct(Long productId) {
+        Product sellerProduct = getSellerOwnedProduct(productId);
+        return deleteProductFromStore(sellerProduct);
+    }
+
+    private ProductDTO deleteProductFromStore(Product product) {
         List<Cart> cart=cartRepository.findCartByProductId(productId);
 
         cart.forEach(cart1 -> cartService
-                .deleteProductFromCart(productId,cart1.getCartId()));
+                .deleteProductFromCart(product.getProductId(),cart1.getCartId()));
 
      productRepository.delete(product);
         return modelMapper.map(product,ProductDTO.class);
     }
+
     @Override
     public ProductDTO updateProductImage(Long productId, MultipartFile image) throws IOException {
         Product productFromDB=productRepository.findById(productId)
                 .orElseThrow(()->new ResourceNotFoundException("Product","productId",productId));
+        return updateProductImageFile(productFromDB, image);
+    }
+
+    @Override
+    public ProductDTO updateSellerProductImage(Long productId, MultipartFile image) throws IOException {
+        Product sellerProduct = getSellerOwnedProduct(productId);
+        return updateProductImageFile(sellerProduct, image);
+    }
+
+    private ProductDTO updateProductImageFile(Product productFromDB, MultipartFile image) throws IOException {
         String fileName=fileService.uploadImage(path,image);
         productFromDB.setImage(fileName);
         Product updateProduct=productRepository.save(productFromDB);
@@ -261,6 +299,30 @@ public class ProductServiceImpl implements ProductService{
          productResponse.setTotalElements(pageProducts.getTotalElements());
          productResponse.setTotalPages(pageProducts.getTotalPages());
          productResponse.setLastPage(pageProducts.isLast());
+        return productResponse;
+    }
+
+    @Override
+    public ProductResponse getAllProductsForSeller(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        Sort sortByAndOrder=sortOrder.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageDetails=PageRequest.of(pageNumber,pageSize,sortByAndOrder);
+        User user=authUtil.loggedInUser();
+        Page<Product> pageProducts=productRepository.findByUser(user,pageDetails);
+        List<Product> products=pageProducts.getContent();
+        List<ProductDTO> productDTOS=products.stream().map(product -> {
+            ProductDTO productDTO=modelMapper.map(product, ProductDTO.class);
+            productDTO.setImage(constructImageUrl(product.getImage()));
+            return  productDTO;
+        }).toList();
+        ProductResponse productResponse=new ProductResponse();
+        productResponse.setContent(productDTOS);
+        productResponse.setPageNumber(pageProducts.getNumber());
+        productResponse.setPageSize(pageProducts.getSize());
+        productResponse.setTotalElements(pageProducts.getTotalElements());
+        productResponse.setTotalPages(pageProducts.getTotalPages());
+        productResponse.setLastPage(pageProducts.isLast());
         return productResponse;
     }
 }
