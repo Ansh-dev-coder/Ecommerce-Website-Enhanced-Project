@@ -92,60 +92,60 @@ public class WebSecurityConfig {
               "/webjars/**"
               ));
     }
-    @Bean
-    public CommandLineRunner init(RoleRepository roleRepository, UserRepository userRepository,PasswordEncoder passwordEncoder)
-    {
-        return args -> {
-            Role userRole=roleRepository.findByRoleName(AppRole.ROLE_USER)
-                    .orElseGet(()->{
-                       Role newUserRole=new Role(AppRole.ROLE_USER);
-                      return roleRepository.save(newUserRole);
-                    });
-            Role sellerRole=roleRepository.findByRoleName(AppRole.ROLE_SELLER)
-                    .orElseGet(()->{
-                        Role newSellerRole=new Role(AppRole.ROLE_SELLER);
-                        return roleRepository.save(newSellerRole);
-                    });
-            Role adminRole=roleRepository.findByRoleName(AppRole.ROLE_ADMIN)
-                    .orElseGet(()->{
-
-                        Role newAdminRole=new Role(AppRole.ROLE_ADMIN);
-                        return roleRepository.save(newAdminRole);
-                    });
-            Set<Role> userRoles=Set.of(userRole);
-            Set<Role> adminRoles=Set.of(adminRole);
-            Set<Role> sellerRoles=Set.of(sellerRole);
-        if (!userRepository.existsByUsername("user1")) {
-            User user1 = new User("user1",
-                    "user1@exapmle.com",
-                    passwordEncoder.encode("user@1234"));
-            userRepository.save(user1);
-        }
-        if(!userRepository.existsByUsername("admin1")) {
-            User admin1 = new User("admin1",
-                    "admin1@example.com",
-                    passwordEncoder.encode("admin@1234"));
-            userRepository.save(admin1);
-        }
-        if(!userRepository.existsByUsername("seller1")) {
-
-            User seller1 = new User("seller1",
-                    "seller1@example.com",
-                    passwordEncoder.encode("seller@1234"));
-            userRepository.save(seller1);
-        }
-        userRepository.findByUsername("user1").ifPresent(user ->{
-            user.setRoles(userRoles);
-            userRepository.save(user);
-        });
-        userRepository.findByUsername("admin1").ifPresent(admin->{
-            admin.setRoles(adminRoles);
-            userRepository.save(admin);
-        });
-        userRepository.findByUsername("seller1").ifPresent(seller->{
-           seller.setRoles(sellerRoles);
-           userRepository.save(seller);
-        });
-        };
-    }
+//    @Bean
+//    public CommandLineRunner init(RoleRepository roleRepository, UserRepository userRepository,PasswordEncoder passwordEncoder)
+//    {
+//        return args -> {
+//            Role userRole=roleRepository.findByRoleName(AppRole.ROLE_USER)
+//                    .orElseGet(()->{
+//                       Role newUserRole=new Role(AppRole.ROLE_USER);
+//                      return roleRepository.save(newUserRole);
+//                    });
+//            Role sellerRole=roleRepository.findByRoleName(AppRole.ROLE_SELLER)
+//                    .orElseGet(()->{
+//                        Role newSellerRole=new Role(AppRole.ROLE_SELLER);
+//                        return roleRepository.save(newSellerRole);
+//                    });
+//            Role adminRole=roleRepository.findByRoleName(AppRole.ROLE_ADMIN)
+//                    .orElseGet(()->{
+//
+//                        Role newAdminRole=new Role(AppRole.ROLE_ADMIN);
+//                        return roleRepository.save(newAdminRole);
+//                    });
+//            Set<Role> userRoles=Set.of(userRole);
+//            Set<Role> adminRoles=Set.of(adminRole);
+//            Set<Role> sellerRoles=Set.of(sellerRole);
+//        if (!userRepository.existsByUsername("user1")) {
+//            User user1 = new User("user1",
+//                    "user1@exapmle.com",
+//                    passwordEncoder.encode("user@1234"));
+//            userRepository.save(user1);
+//        }
+//        if(!userRepository.existsByUsername("admin1")) {
+//            User admin1 = new User("admin1",
+//                    "admin1@example.com",
+//                    passwordEncoder.encode("admin@1234"));
+//            userRepository.save(admin1);
+//        }
+//        if(!userRepository.existsByUsername("seller1")) {
+//
+//            User seller1 = new User("seller1",
+//                    "seller1@example.com",
+//                    passwordEncoder.encode("seller@1234"));
+//            userRepository.save(seller1);
+//        }
+//        userRepository.findByUsername("user1").ifPresent(user ->{
+//            user.setRoles(userRoles);
+//            userRepository.save(user);
+//        });
+//        userRepository.findByUsername("admin1").ifPresent(admin->{
+//            admin.setRoles(adminRoles);
+//            userRepository.save(admin);
+//        });
+//        userRepository.findByUsername("seller1").ifPresent(seller->{
+//           seller.setRoles(sellerRoles);
+//           userRepository.save(seller);
+//        });
+//        };
+//    }
 }
