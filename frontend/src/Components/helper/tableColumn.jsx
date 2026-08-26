@@ -97,7 +97,8 @@ export const getOrderColumns = (onEditOrder, canUpdateStatus = false, showEmail 
 export const adminProductTableColumn = (handleEdit,
   handleDelete,
   handleImageUpload,
-  handleProductView) => [
+  handleProductView) => {
+  const columns = [
 
   {
     sortable: false,
@@ -250,37 +251,52 @@ export const adminProductTableColumn = (handleEdit,
           <FaEye className='mr-1' />
           View
         </button>
-        <button
-          type='button'
-          onClick={() => handleEdit(params.row)}
-          className='flex h-9 items-center rounded-md bg-blue-500 px-3 text-white hover:bg-blue-600 transition'
-          title='Edit'
-        >
-          <FaEdit className='mr-1' />
-          Edit
-        </button>
-        <button
-          type='button'
-          onClick={() => handleImageUpload(params.row)}
-          className='flex h-9 items-center rounded-md bg-purple-500 px-3 text-white hover:bg-purple-600 transition'
-          title='Upload Image'
-        >
-          <FaImage className='mr-1' />
-          Image
-        </button>
-        <button
-          type='button'
-          onClick={() => handleDelete(params.row)}
-          className='flex h-9 items-center rounded-md bg-red-500 px-3 text-white hover:bg-red-600 transition'
-          title='Delete'
-        >
-          <FaTrash className='mr-1' />
-          Delete
-        </button>
+        {handleEdit && (
+          <button
+            type='button'
+            onClick={() => handleEdit(params.row)}
+            className='flex h-9 items-center rounded-md bg-blue-500 px-3 text-white hover:bg-blue-600 transition'
+            title='Edit'
+          >
+            <FaEdit className='mr-1' />
+            Edit
+          </button>
+        )}
+        {handleImageUpload && (
+          <button
+            type='button'
+            onClick={() => handleImageUpload(params.row)}
+            className='flex h-9 items-center rounded-md bg-purple-500 px-3 text-white hover:bg-purple-600 transition'
+            title='Upload Image'
+          >
+            <FaImage className='mr-1' />
+            Image
+          </button>
+        )}
+        {handleDelete && (
+          <button
+            type='button'
+            onClick={() => handleDelete(params.row)}
+            className='flex h-9 items-center rounded-md bg-red-500 px-3 text-white hover:bg-red-600 transition'
+            title='Delete'
+          >
+            <FaTrash className='mr-1' />
+            Delete
+          </button>
+        )}
       </div>
     ),
   },
-];
+]
+
+  const hasProductActions = Boolean(handleEdit || handleDelete || handleImageUpload)
+
+  return hasProductActions
+    ? columns
+    : columns.map((column) =>
+        column.field === 'action' ? { ...column, minWidth: 140 } : column
+      )
+};
 
 export const adminCategoryTableColumn = (handleDelete) => [
   {

@@ -2,6 +2,8 @@ const initialState={
     products: null,
     categories: null,
     pagination: {},
+    sellerProducts: null,
+    sellerPagination: {},
 }
 export const ProductReducer=(state=initialState,action)=>{
 switch(action.type){
@@ -17,6 +19,24 @@ switch(action.type){
                     totalPages : action.totalPages ,
                     lastPage: action.lastPage,
                 }
+        }
+    case "FETCH_SELLER_PRODUCTS" :
+        return{
+                ...state ,
+                sellerProducts : action.payload,
+                sellerPagination : {
+                    pageNumber : action.pageNumber,
+                    pageSize : action.pageSize,
+                    totalElements: action.totalElements ,
+                    totalPages : action.totalPages ,
+                    lastPage: action.lastPage,
+                }
+        }
+    case "CLEAR_SELLER_PRODUCTS":
+        return {
+            ...state,
+            sellerProducts: null,
+            sellerPagination: {},
         }
     case "FETCH_CATEGORIES":
         return{

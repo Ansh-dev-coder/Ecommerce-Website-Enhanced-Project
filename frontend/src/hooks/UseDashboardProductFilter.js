@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { dashboardProductsAction } from "../store/actions";
 
-const useDashboardProductFilter = (page = 0, size, enabled = true) => {
+const useDashboardProductFilter = (page = 0, size, enabled = true, fetchAction = dashboardProductsAction) => {
   const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
   const searchParamString = searchParams.toString();
@@ -37,8 +37,8 @@ const useDashboardProductFilter = (page = 0, size, enabled = true) => {
     }
 
     const queryString = params.toString();
-    dispatch(dashboardProductsAction(queryString));
-  }, [dispatch, page, size, searchParamString, enabled, searchParams]);
+    dispatch(fetchAction(queryString));
+  }, [dispatch, page, size, searchParamString, enabled, searchParams, fetchAction]);
 };
 
 export default useDashboardProductFilter;

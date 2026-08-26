@@ -5,7 +5,13 @@ import Modal from '../../shared/Modal';
 import { getOrderColumns } from '../../helper/tableColumn';
 import UpdateOrderForm from './UpdateOrderForm';
 
-const OrderTable = ({ orders, pagination, personalOrders = false, sellerOrders = false }) => {
+const OrderTable = ({
+    orders,
+    pagination,
+    personalOrders = false,
+    sellerOrders = false,
+    updateStatusAction,
+}) => {
     const navigate=useNavigate();
     const [currentPage,setCurrentPage]=useState(pagination?.pageNumber + 1 || 1)
     const [selectedOrder, setSelectedOrder] = useState(null)
@@ -14,7 +20,7 @@ const OrderTable = ({ orders, pagination, personalOrders = false, sellerOrders =
     const [searchParams]=useSearchParams()
     const params=new URLSearchParams(searchParams)
     const pathname=useLocation().pathname
-    const canUpdateStatus = !personalOrders && !sellerOrders
+    const canUpdateStatus = !personalOrders
     const heading = sellerOrders ? 'Seller Orders' : personalOrders ? 'My Orders' : 'All Orders'
     const description = sellerOrders
       ? 'View orders connected to your seller products'
@@ -41,7 +47,17 @@ const OrderTable = ({ orders, pagination, personalOrders = false, sellerOrders =
       const  page=paginationModel.page + 1
       setCurrentPage(page);
       params.set("page",page.toString())
+      params.set("pageSize", String(paginationModel.pageSize || pagination?.pageSize || 10))
       navigate(`${pathname}?${params}`)
+    }
+
+    const getOrderQueryString = () => {
+      const params = new URLSearchParams()
+      params.set("pageNumber", String(currentPage - 1))
+      params.set("pageSize", String(pagination?.pageSize || 10))
+      params.set("sortBy", searchParams.get("sortBy") || "totalPrice")
+      params.set("sortOrder", searchParams.get("sortOrder") || "asc")
+      return params.toString()
     }
 
     return (
@@ -94,6 +110,8 @@ const OrderTable = ({ orders, pagination, personalOrders = false, sellerOrders =
               setLoader={setLoader}
               selectedId={selectedOrder.id}
               selectedItem={selectedOrder}
+              updateAction={updateStatusAction}
+              queryString={getOrderQueryString()}
             />
           </Modal>
         )}

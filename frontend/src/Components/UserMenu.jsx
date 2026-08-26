@@ -107,6 +107,9 @@ const UserMenu = () => {
         <MenuItem
           onClick={() => {
             dispatch({type: 'CLEAR_CART'});
+            dispatch({type: 'CLEAR_PERSONAL_ORDERS'});
+            dispatch({type: 'CLEAR_SELLER_PRODUCTS'});
+            dispatch({type: 'CLEAR_SELLER_ORDERS'});
             localStorage.removeItem('auth');
             localStorage.removeItem('cartItems');
             window.location.href = '/login';

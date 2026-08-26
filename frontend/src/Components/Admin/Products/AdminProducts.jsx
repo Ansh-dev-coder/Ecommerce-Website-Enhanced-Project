@@ -17,9 +17,13 @@ import { deleteProduct } from '../../../store/actions';
 const AdminProducts = ({
   panelType = "admin",
   fetchProducts = true,
+  fetchProductsAction,
   productsOverride,
   paginationOverride,
-  integrationPending = false,
+  canAddProduct = true,
+  canEditProduct = true,
+  canDeleteProduct = true,
+  canUpdateImage = true,
 }) => {
   const dispatch = useDispatch();
   const { products: storeProducts, pagination: storePagination } = useSelector((state) => state.products);
@@ -29,17 +33,17 @@ const AdminProducts = ({
 
   const [paginationModel, setPaginationModel] = useState({
     page: pagination?.pageNumber ?? 0,
-    pageSize: pagination?.pageSize,
+    pageSize: pagination?.pageSize ?? 10,
   });
 
-  useDashboardProductFilter(paginationModel.page, paginationModel.pageSize, fetchProducts);
+  useDashboardProductFilter(paginationModel.page, paginationModel.pageSize, fetchProducts, fetchProductsAction);
 
   // Keep the controlled DataGrid model aligned with the server response.
   useEffect(() => {
     setPaginationModel((previousModel) => {
       const nextModel = {
         page: pagination?.pageNumber ?? previousModel.page,
-        pageSize: pagination?.pageSize ?? previousModel.pageSize,
+        pageSize: pagination?.pageSize ?? previousModel.pageSize ?? 10,
       };
 
       if (
@@ -80,7 +84,7 @@ const AdminProducts = ({
   });
   const dataGridPaginationModel = {
     page: paginationModel.page,
-    pageSize: paginationModel.pageSize ?? pagination?.pageSize,
+    pageSize: paginationModel.pageSize ?? pagination?.pageSize ?? 10,
   };
   const getDashboardProductQueryString = () => {
     const params = new URLSearchParams()
@@ -115,8 +119,8 @@ const AdminProducts = ({
       return
     }
 
-    if (integrationPending) {
-      toast.success('Seller product delete API integration point is ready. Backend connection pending.')
+    if (!canDeleteProduct) {
+      toast.error('Product deletion is not available for seller products.')
       setOpenDeleteModal(false)
       setSelectedDeleteProduct(null)
       return
@@ -180,17 +184,19 @@ const AdminProducts = ({
           </h1>
           {isSellerPanel && (
             <p className="mt-1 text-sm text-slate-500">
-              Manage your seller inventory here. Data loading will connect to the seller products API later.
+              View the products assigned to your seller account.
             </p>
           )}
         </div>
-        <button 
-          onClick={handleAddNew}
-          className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-semibold transition duration-300 flex items-center gap-2"
-        >
-          <MdAddShoppingCart />
-          Add New Product
-        </button>
+        {canAddProduct && (
+          <button
+            onClick={handleAddNew}
+            className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-semibold transition duration-300 flex items-center gap-2"
+          >
+            <MdAddShoppingCart />
+            Add New Product
+          </button>
+        )}
       </div>
 
       {!emptyProduct && <h1>{isSellerPanel ? "My Products" : "All Products"}</h1>}
@@ -205,7 +211,7 @@ const AdminProducts = ({
               <h2>{isSellerPanel ? "No seller products loaded yet" : "No Product exist"}</h2>
               {isSellerPanel && (
                 <p className="mt-2 text-sm text-slate-500">
-                  This page is ready for the seller-scoped products API.
+                  Products created for your seller account will appear here.
                 </p>
               )}
             </div>
@@ -213,13 +219,18 @@ const AdminProducts = ({
             <div>
               <DataGrid
                 rows={tableRecords}
-                columns={adminProductTableColumn(handleEdit, handleDelete, handleImageUpload, handleProductView)}
+                columns={adminProductTableColumn(
+                  canEditProduct ? handleEdit : null,
+                  canDeleteProduct ? handleDelete : null,
+                  canUpdateImage ? handleImageUpload : null,
+                  handleProductView
+                )}
                 autoHeight
                 paginationMode="server"
                 rowCount={pagination?.totalElements || 0}
                 paginationModel={dataGridPaginationModel}
                 onPaginationModelChange={handlePaginationChange}
-                pageSizeOptions={pagination?.pageSize ? [pagination.pageSize] : []}
+                pageSizeOptions={[pagination?.pageSize || 10]}
                 checkboxSelection
                 disableRowSelectionOnClick
                 disableColumnResize
@@ -250,7 +261,6 @@ const AdminProducts = ({
           setOpen={setOpenProductModal}
           product={selectedProduct}
           update={isEditMode}
-          integrationPending={integrationPending}
         />
       </Modal>
 
@@ -279,7 +289,6 @@ const AdminProducts = ({
           product={selectedImageProduct}
           setOpen={handleImageModalOpen}
           queryString={getDashboardProductQueryString()}
-          integrationPending={integrationPending}
         />
       </Modal>
     </div>

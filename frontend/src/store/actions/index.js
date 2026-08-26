@@ -177,6 +177,8 @@ try{
     dispatch({type: "CLEAR_CART"})
     localStorage.removeItem("cartItems")
     dispatch({type: "CLEAR_PERSONAL_ORDERS"})
+    dispatch({type: "CLEAR_SELLER_PRODUCTS"})
+    dispatch({type: "CLEAR_SELLER_ORDERS"})
     dispatch({type : "LOGIN_USER",payload : data})
     localStorage.setItem("auth",JSON.stringify(data))
     await dispatch(getUserCart())
@@ -473,6 +475,30 @@ export const getOrdersForDashboards=(queryString)=>async (dispatch)=>{
     }
 }
 
+export const getSellerOrders = (queryString) => async (dispatch) => {
+    try {
+        dispatch({type:"IS_FETCHING"})
+        const sellerOrderUrl = queryString ? `/seller/orders?${queryString}` : `/seller/orders`
+        const {data} = await api.get(sellerOrderUrl)
+        dispatch({
+            type: "GET_SELLER_ORDERS",
+            payload: data.content,
+            pageNumber: data.pageNumber,
+            pageSize: data.pageSize,
+            totalElements: data.totalElements,
+            totalPages: data.totalPages,
+            lastPage: data.lastPage,
+        })
+        dispatch({type:"IS_SUCCESS"})
+    } catch (error) {
+        dispatch({type:"SELLER_ORDERS_ERROR"})
+        dispatch({
+            type:"IS_ERROR",
+            payload: error?.response?.data?.message || "failed to fetch seller orders",
+        })
+    }
+}
+
 export const getLoggedInUserOrders = (queryString) => async (dispatch) => {
     try {
         dispatch({type:"IS_FETCHING"})
@@ -522,6 +548,33 @@ export const updateOrderStatus = (orderId, status, notes, toast, setOpen, setLoa
         setLoader?.(false)
     }
 }
+
+export const updateSellerOrderStatus = (orderId, status, notes, toast, setOpen, setLoader, queryString = "pageNumber=0") => async (dispatch) => {
+    try {
+        setLoader?.(true)
+
+        const { data } = await api.put(`/seller/orders/${orderId}/status`, {
+           status: status,
+        })
+
+        dispatch({
+            type: "UPDATE_SELLER_ORDER_STATUS",
+            payload: {
+                orderId,
+                status,
+                notes,
+            },
+        })
+
+        dispatch(getSellerOrders(queryString))
+        toast.success(data?.message || "Order status updated successfully")
+        setOpen?.(false)
+    } catch (error) {
+        toast.error(error?.response?.data?.message || "Failed to update order status")
+    } finally {
+        setLoader?.(false)
+    }
+}
 export const dashboardProductsAction=(queryString)=>async (dispatch)=>{
     try{
 
@@ -543,6 +596,31 @@ export const dashboardProductsAction=(queryString)=>async (dispatch)=>{
         dispatch({
             type:"IS_ERROR",
             payload: error?.response?.data?.message || "failed to fetch dashboard products",
+        })
+    }
+}
+
+export const sellerProductsAction=(queryString)=>async (dispatch)=>{
+    try{
+        dispatch({type:"IS_FETCHING"})
+        const sellerProductUrl = queryString ? `/seller/products?${queryString}` : `/seller/products`
+        const {data}=await api.get(sellerProductUrl)
+        dispatch({
+            type: "FETCH_SELLER_PRODUCTS",
+            payload: data.content,
+            pageNumber: data.pageNumber,
+            pageSize: data.pageSize,
+            totalElements: data.totalElements,
+            totalPages: data.totalPages,
+            lastPage: data.lastPage,
+        })
+
+        dispatch({type:"IS_SUCCESS"})
+    }catch(error){
+        console.log(error)
+        dispatch({
+            type:"IS_ERROR",
+            payload: error?.response?.data?.message || "failed to fetch seller products",
         })
     }
 }

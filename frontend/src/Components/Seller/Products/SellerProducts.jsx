@@ -1,22 +1,21 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import AdminProducts from "../../Admin/Products/AdminProducts";
-
-const sellerProductsPagination = {
-  pageNumber: 0,
-  pageSize: 10,
-  totalElements: 0,
-  totalPages: 0,
-  lastPage: true,
-};
+import { sellerProductsAction } from "../../../store/actions";
 
 const SellerProducts = () => {
+  const { sellerProducts, sellerPagination } = useSelector((state) => state.products);
+
   return (
     <AdminProducts
       panelType="seller"
-      fetchProducts={false}
-      productsOverride={[]}
-      paginationOverride={sellerProductsPagination}
-      integrationPending
+      fetchProductsAction={sellerProductsAction}
+      productsOverride={sellerProducts}
+      paginationOverride={sellerPagination}
+      canAddProduct={false}
+      canEditProduct={false}
+      canDeleteProduct={false}
+      canUpdateImage={false}
     />
   );
 };

@@ -13,7 +13,15 @@ const ORDER_STATUS_OPTIONS = [
   'CANCELLED',
 ]
 
-const UpdateOrderForm = ({ setOpen, selectedId, selectedItem, loader, setLoader }) => {
+const UpdateOrderForm = ({
+  setOpen,
+  selectedId,
+  selectedItem,
+  loader,
+  setLoader,
+  updateAction = updateOrderStatus,
+  queryString,
+}) => {
   const dispatch = useDispatch()
   const [status, setStatus] = useState(selectedItem?.status || 'PENDING')
   const [notes, setNotes] = useState('')
@@ -32,7 +40,7 @@ const UpdateOrderForm = ({ setOpen, selectedId, selectedItem, loader, setLoader 
       return
     }
 
-    dispatch(updateOrderStatus(selectedId, status, notes, toast, setOpen, setLoader))
+    dispatch(updateAction(selectedId, status, notes, toast, setOpen, setLoader, queryString))
   }
 
   return (
