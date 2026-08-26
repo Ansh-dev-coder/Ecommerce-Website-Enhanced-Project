@@ -1,6 +1,7 @@
 package com.ecommerce.project.controller;
 
 import com.ecommerce.project.config.AppConst;
+import com.ecommerce.project.model.Order;
 import com.ecommerce.project.model.User;
 import com.ecommerce.project.payload.*;
 import com.ecommerce.project.security.jwt.security.services.UserDetailImpl;
@@ -94,4 +95,17 @@ public class OrderController {
 
        return new ResponseEntity<>(orderResponse,HttpStatus.OK);
     }
+
+
+    @GetMapping("seller/orders")
+    public ResponseEntity<OrderResponse> getAllSellerOrders(@RequestParam(name = "pageNumber",defaultValue = AppConst.PAGE_NUMBER,required = false)Integer pageNumber,
+                                                           @RequestParam(name = "pageSize",defaultValue = AppConst.PAGE_SIZE,required = false)Integer pageSize,
+                                                           @RequestParam(name = "sortBy",defaultValue = AppConst.SORT_ORDER_BY,required = false)String sortBy,
+                                                           @RequestParam(name = "sortOrder",defaultValue = AppConst.SORT_DIR,required = false)String sortOrder)
+    {
+        OrderResponse orderResponse=orderService.getAllSellerOrders(pageNumber,pageSize,sortBy,sortOrder);
+        return new ResponseEntity<>(orderResponse,HttpStatus.OK);
+
+    }
+
 }
