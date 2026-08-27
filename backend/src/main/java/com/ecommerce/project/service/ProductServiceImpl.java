@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -249,7 +250,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     private ProductDTO deleteProductFromStore(Product product) {
-        List<Cart> cart=cartRepository.findCartByProductId(productId);
+        List<Cart> cart=cartRepository.findCartByProductId(product.getProductId());
 
         cart.forEach(cart1 -> cartService
                 .deleteProductFromCart(product.getProductId(),cart1.getCartId()));
@@ -324,5 +325,17 @@ public class ProductServiceImpl implements ProductService{
         productResponse.setTotalPages(pageProducts.getTotalPages());
         productResponse.setLastPage(pageProducts.isLast());
         return productResponse;
+    }
+
+    private Product getSellerOwnedProduct(Long productId) {
+        Product product=productRepository.findById(productId)
+                .orElseThrow(()->new ResourceNotFoundException("Product","productId",productId));
+        User seller=authUtil.loggedInUser();
+
+        if (product.getUser() == null || !Objects.equals(product.getUser().getUserId(), seller.getUserId())) {
+            throw new ApiException("You are not allowed to manage this product");
+        }
+
+        return product;
     }
 }

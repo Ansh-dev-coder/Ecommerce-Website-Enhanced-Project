@@ -649,17 +649,17 @@ export const sellerProductsAction=(queryString)=>async (dispatch)=>{
     }
 }
 
-export const addProduct = (productData, toast, setOpen) => async (dispatch) => {
+export const addProduct = (productData, toast, setOpen, queryString = "pageNumber=0") => async (dispatch) => {
     try {
         dispatch({ type: "IS_FETCHING" })
         
-        const { data } = await api.post(`/admin/categories/${productData.categoryId}/product`, productData)
+        await api.post(`/admin/categories/${productData.categoryId}/product`, productData)
 
         dispatch({ type: "IS_SUCCESS" })
         toast.success('Product added successfully')
         
         // Refresh products list
-        dispatch(dashboardProductsAction("pageNumber=0"))
+        dispatch(dashboardProductsAction(queryString))
         
         if (setOpen) {
             setOpen(false)
@@ -674,23 +674,69 @@ export const addProduct = (productData, toast, setOpen) => async (dispatch) => {
     }
 }
 
-export const updateProduct = (productId, productData, toast, setOpen) => async (dispatch) => {
+export const addSellerProduct = (productData, toast, setOpen, queryString = "pageNumber=0") => async (dispatch) => {
+    try {
+        dispatch({ type: "IS_FETCHING" })
+
+        await api.post(`/seller/categories/${productData.categoryId}/product`, productData)
+
+        dispatch({ type: "IS_SUCCESS" })
+        toast.success('Product added successfully')
+
+        dispatch(sellerProductsAction(queryString))
+
+        if (setOpen) {
+            setOpen(false)
+        }
+    } catch (error) {
+        console.error('Error adding seller product:', error)
+        dispatch({
+            type: "IS_ERROR",
+            payload: error?.response?.data?.message || "Failed to add product",
+        })
+        toast.error(error?.response?.data?.message || 'Failed to add product')
+    }
+}
+
+export const updateProduct = (productId, productData, toast, setOpen, queryString = "pageNumber=0") => async (dispatch) => {
     try {
         dispatch({ type: "IS_FETCHING" })
         
-        const { data } = await api.put(`/admin/products/${productId}`, productData)
+        await api.put(`/admin/products/${productId}`, productData)
 
         dispatch({ type: "IS_SUCCESS" })
         toast.success('Product updated successfully')
         
-        // Refresh products list
-        dispatch(dashboardProductsAction("pageNumber=0"))
+        dispatch(dashboardProductsAction(queryString))
         
         if (setOpen) {
             setOpen(false)
         }
     } catch (error) {
         console.error('Error updating product:', error)
+        dispatch({
+            type: "IS_ERROR",
+            payload: error?.response?.data?.message || "Failed to update product",
+        })
+        toast.error(error?.response?.data?.message || 'Failed to update product')
+    }
+}
+
+export const updateSellerProduct = (productId, productData, toast, setOpen, queryString = "pageNumber=0") => async (dispatch) => {
+    try {
+        dispatch({ type: "IS_FETCHING" })
+
+        const { data } = await api.put(`/seller/products/${productId}`, productData)
+
+        dispatch({ type: "IS_SUCCESS" })
+        toast.success(data?.message || 'Product updated successfully')
+        dispatch(sellerProductsAction(queryString))
+
+        if (setOpen) {
+            setOpen(false)
+        }
+    } catch (error) {
+        console.error('Error updating seller product:', error)
         dispatch({
             type: "IS_ERROR",
             payload: error?.response?.data?.message || "Failed to update product",
@@ -719,6 +765,26 @@ export const deleteProduct = (productId, toast, onSuccess, queryString = "pageNu
     }
 }
 
+export const deleteSellerProduct = (productId, toast, onSuccess, queryString = "pageNumber=0") => async (dispatch) => {
+    try {
+        dispatch({ type: "IS_FETCHING" })
+
+        const { data } = await api.delete(`/seller/products/${productId}`)
+
+        dispatch({ type: "IS_SUCCESS" })
+        toast.success(data?.message || "Product deleted successfully")
+        dispatch(sellerProductsAction(queryString))
+        onSuccess?.()
+    } catch (error) {
+        console.error("Error deleting seller product:", error)
+        dispatch({
+            type: "IS_ERROR",
+            payload: error?.response?.data?.message || "Failed to delete product",
+        })
+        toast.error(error?.response?.data?.message || "Failed to delete product")
+    }
+}
+
 export const updateProductImage = (productId, imageFile, toast, setOpen, setLoader, queryString = "pageNumber=0") => async (dispatch) => {
     const formData = new FormData()
     formData.append("image", imageFile)
@@ -735,6 +801,32 @@ export const updateProductImage = (productId, imageFile, toast, setOpen, setLoad
         setOpen?.(false)
     } catch (error) {
         console.error("Error updating product image:", error)
+        dispatch({
+            type: "IS_ERROR",
+            payload: error?.response?.data?.message || "Failed to update product image",
+        })
+        toast.error(error?.response?.data?.message || "Failed to update product image")
+    } finally {
+        setLoader?.(false)
+    }
+}
+
+export const updateSellerProductImage = (productId, imageFile, toast, setOpen, setLoader, queryString = "pageNumber=0") => async (dispatch) => {
+    const formData = new FormData()
+    formData.append("image", imageFile)
+
+    try {
+        setLoader?.(true)
+        dispatch({ type: "IS_FETCHING" })
+
+        const { data } = await api.put(`/seller/products/${productId}/image`, formData)
+
+        dispatch({ type: "IS_SUCCESS" })
+        toast.success(data?.message || "Product image updated successfully")
+        dispatch(sellerProductsAction(queryString))
+        setOpen?.(false)
+    } catch (error) {
+        console.error("Error updating seller product image:", error)
         dispatch({
             type: "IS_ERROR",
             payload: error?.response?.data?.message || "Failed to update product image",

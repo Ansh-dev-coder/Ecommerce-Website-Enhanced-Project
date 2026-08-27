@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import Spinners from '../../shared/Spinners'
 import { updateProductImage } from '../../../store/actions'
 
-const ProductImageUpdate = ({ product, setOpen, queryString }) => {
+const ProductImageUpdate = ({ product, setOpen, queryString, updateImageAction = updateProductImage }) => {
   const dispatch = useDispatch()
   const [selectedImage, setSelectedImage] = useState(null)
   const [previewImage, setPreviewImage] = useState(product?.image || '')
@@ -62,7 +62,7 @@ const ProductImageUpdate = ({ product, setOpen, queryString }) => {
       return
     }
 
-    dispatch(updateProductImage(
+    dispatch(updateImageAction(
       product.productId,
       selectedImage,
       toast,

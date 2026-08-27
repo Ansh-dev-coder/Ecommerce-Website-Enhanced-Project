@@ -12,7 +12,7 @@ import DeleteModal from '../../shared/DeleteModal';
 import ProductViewModal from '../../shared/ProductViewModal';
 import AddProductForm from './AddProductForm';
 import ProductImageUpdate from './ProductImageUpdate';
-import { deleteProduct } from '../../../store/actions';
+import { addProduct, deleteProduct, updateProduct, updateProductImage } from '../../../store/actions';
 
 const AdminProducts = ({
   panelType = "admin",
@@ -24,6 +24,10 @@ const AdminProducts = ({
   canEditProduct = true,
   canDeleteProduct = true,
   canUpdateImage = true,
+  addProductAction = addProduct,
+  updateProductAction = updateProduct,
+  deleteProductAction = deleteProduct,
+  updateImageAction = updateProductImage,
 }) => {
   const dispatch = useDispatch();
   const { products: storeProducts, pagination: storePagination } = useSelector((state) => state.products);
@@ -80,6 +84,8 @@ const AdminProducts = ({
       price: item.price,
       discount: item.discount,
       specialPrice: item.specialPrice,
+      categoryId: item.categoryId || item.category?.categoryId,
+      category: item.category,
     };
   });
   const dataGridPaginationModel = {
@@ -126,7 +132,7 @@ const AdminProducts = ({
       return
     }
 
-    dispatch(deleteProduct(
+    dispatch(deleteProductAction(
       selectedDeleteProduct.productId,
       toast,
       () => {
@@ -261,6 +267,9 @@ const AdminProducts = ({
           setOpen={setOpenProductModal}
           product={selectedProduct}
           update={isEditMode}
+          addAction={addProductAction}
+          updateAction={updateProductAction}
+          queryString={getDashboardProductQueryString()}
         />
       </Modal>
 
@@ -289,6 +298,7 @@ const AdminProducts = ({
           product={selectedImageProduct}
           setOpen={handleImageModalOpen}
           queryString={getDashboardProductQueryString()}
+          updateImageAction={updateImageAction}
         />
       </Modal>
     </div>

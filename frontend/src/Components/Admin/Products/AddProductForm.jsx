@@ -7,7 +7,14 @@ import InputField from '../../shared/InputField'
 import Spinners from '../../shared/Spinners'
 import { fetchCategories, addProduct, updateProduct } from '../../../store/actions'
 
-const AddProductForm = ({ product, setOpen, update = false }) => {
+const AddProductForm = ({
+  product,
+  setOpen,
+  update = false,
+  addAction = addProduct,
+  updateAction = updateProduct,
+  queryString,
+}) => {
   const dispatch = useDispatch()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -73,11 +80,9 @@ const AddProductForm = ({ product, setOpen, update = false }) => {
       }
 
       if (update) {
-        // Update existing product
-        dispatch(updateProduct(product.productId, productData, toast, setOpen))
+        await dispatch(updateAction(product.productId, productData, toast, setOpen, queryString))
       } else {
-        // Add new product
-        dispatch(addProduct(productData, toast, setOpen))
+        await dispatch(addAction(productData, toast, setOpen, queryString))
         reset()
       }
     } catch (error) {
