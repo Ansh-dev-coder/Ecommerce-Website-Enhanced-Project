@@ -10,15 +10,31 @@ import ErrorPage from "../../shared/ErrorPage";
 const SellerDashboard = () => {
   const dispatch = useDispatch();
   const { sellerPagination } = useSelector((state) => state.products);
-  const { sellerOrders, sellerPagination: sellerOrderPagination } = useSelector((state) => state.order);
+  const {
+    sellerOrders,
+    sellerPagination: sellerOrderPagination,
+    sellerOrdersSellerKey,
+  } = useSelector((state) => state.order);
   const { isLoading, errorMessage } = useSelector((state) => state.error);
+  const { user } = useSelector((state) => state.auth);
+  const sellerKey = user?.userId || user?.email || user?.username;
 
   useEffect(() => {
+    dispatch({ type: "CLEAR_SELLER_ORDERS" });
+    if (!sellerKey) {
+      return;
+    }
+
     dispatch(sellerProductsAction("pageNumber=0&pageSize=10"));
     dispatch(getSellerOrders("pageNumber=0&pageSize=10"));
-  }, [dispatch]);
+  }, [dispatch, sellerKey]);
 
-  const sellerRevenue = sellerOrders?.reduce(
+  const currentSellerOrders = sellerOrdersSellerKey === sellerKey ? sellerOrders || [] : [];
+  const sellerOrderCount = currentSellerOrders.length === 0
+    ? 0
+    : sellerOrderPagination?.totalElements ?? currentSellerOrders.length;
+
+  const sellerRevenue = currentSellerOrders?.reduce(
     (total, order) => total + Number(order?.totalPrice || 0),
     0
   );
@@ -52,7 +68,7 @@ const SellerDashboard = () => {
 
         <DashboardOverview
           title="Seller Orders"
-          amount={sellerOrderPagination?.totalElements ?? 0}
+          amount={sellerOrderCount}
           icon={<FaShoppingCart size={22} />}
         />
 

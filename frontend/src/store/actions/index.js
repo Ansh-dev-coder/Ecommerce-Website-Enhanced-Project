@@ -475,22 +475,46 @@ export const getOrdersForDashboards=(queryString)=>async (dispatch)=>{
     }
 }
 
-export const getSellerOrders = (queryString) => async (dispatch) => {
+const getCurrentUserKey = (state) => {
+    const user = state.auth?.user
+    return user?.userId || user?.email || user?.username || null
+}
+
+export const getSellerOrders = (queryString) => async (dispatch, getState) => {
+    const requestedSellerKey = getCurrentUserKey(getState())
+
     try {
         dispatch({type:"IS_FETCHING"})
         const sellerOrderUrl = queryString ? `/seller/orders?${queryString}` : `/seller/orders`
         const {data} = await api.get(sellerOrderUrl)
+        const currentSellerKey = getCurrentUserKey(getState())
+
+        if (requestedSellerKey !== currentSellerKey) {
+            dispatch({type:"IS_SUCCESS"})
+            return
+        }
+
+        const sellerOrders = Array.isArray(data?.content) ? data.content : []
+
         dispatch({
             type: "GET_SELLER_ORDERS",
-            payload: data.content,
-            pageNumber: data.pageNumber,
-            pageSize: data.pageSize,
-            totalElements: data.totalElements,
-            totalPages: data.totalPages,
-            lastPage: data.lastPage,
+            payload: sellerOrders,
+            sellerKey: currentSellerKey,
+            pageNumber: data?.pageNumber ?? 0,
+            pageSize: data?.pageSize ?? sellerOrders.length,
+            totalElements: sellerOrders.length === 0 ? 0 : data?.totalElements ?? sellerOrders.length,
+            totalPages: sellerOrders.length === 0 ? 0 : data?.totalPages ?? 1,
+            lastPage: sellerOrders.length === 0 ? true : data?.lastPage,
         })
         dispatch({type:"IS_SUCCESS"})
     } catch (error) {
+        const currentSellerKey = getCurrentUserKey(getState())
+
+        if (requestedSellerKey !== currentSellerKey) {
+            dispatch({type:"IS_SUCCESS"})
+            return
+        }
+
         dispatch({type:"SELLER_ORDERS_ERROR"})
         dispatch({
             type:"IS_ERROR",

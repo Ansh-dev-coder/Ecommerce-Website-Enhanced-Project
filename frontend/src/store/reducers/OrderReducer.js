@@ -7,6 +7,7 @@ const initialState={
     sellerOrders: null,
     sellerPagination: {},
     sellerOrdersLoaded: false,
+    sellerOrdersSellerKey: null,
 }
 export const orderReducer=(state = initialState,action) =>{
 
@@ -53,6 +54,7 @@ export const orderReducer=(state = initialState,action) =>{
             return {
                 ...state,
                 sellerOrders: action.payload,
+                sellerOrdersSellerKey: action.sellerKey,
                 sellerPagination: {
                     pageNumber: action.pageNumber,
                     pageSize: action.pageSize,
@@ -79,6 +81,7 @@ export const orderReducer=(state = initialState,action) =>{
                 sellerOrders: [],
                 sellerPagination: {},
                 sellerOrdersLoaded: true,
+                sellerOrdersSellerKey: null,
             }
 
         case "PERSONAL_ORDERS_ERROR":
@@ -103,6 +106,7 @@ export const orderReducer=(state = initialState,action) =>{
                 sellerOrders: null,
                 sellerPagination: {},
                 sellerOrdersLoaded: false,
+                sellerOrdersSellerKey: null,
             }
 
         default:
