@@ -1,12 +1,14 @@
 import api from "../../api/api"
 import toast from "react-hot-toast"
 
+const withQueryString = (baseUrl, queryString) =>
+    queryString ? `${baseUrl}?${queryString}` : baseUrl
 
-export const fetchProducts=(queryString)=>async (dispatch)=>{
+export const fetchProducts=(queryString = "")=>async (dispatch)=>{
     try{
 
         dispatch({type:"IS_FETCHING"})
-        const {data}=await api.get(`/public/products?${queryString}`)
+        const {data}=await api.get(withQueryString("/public/products", queryString))
         dispatch({
             type: "FETCH_PRODUCTS",
             payload: data.content,
@@ -31,7 +33,7 @@ export const fetchCategories=(queryString = "")=>async(dispatch)=>{
 
     try{
         dispatch({type:"CATEGORY_LOADER"})
-        const categoryUrl = queryString ? `/public/categories?${queryString}` : `/public/categories`
+        const categoryUrl = withQueryString("/public/categories", queryString)
         const {data} =await api.get(categoryUrl)
         dispatch({
             type : "FETCH_CATEGORIES"   ,
@@ -214,7 +216,7 @@ setLoader(false)
 export const getAllSellers=(queryString = "")=>async (dispatch)=>{
     try{
         dispatch({type:"IS_FETCHING"})
-        const sellerUrl = queryString ? `/auth/sellers?${queryString}` : `/auth/sellers`
+        const sellerUrl = withQueryString("/auth/sellers", queryString)
         const {data}=await api.get(sellerUrl)
         dispatch({
             type: "FETCH_SELLERS",
@@ -450,11 +452,11 @@ export const analyticsAction=()=>async(dispatch,getState)=>{
         })
     }
 }
-export const getOrdersForDashboards=(queryString)=>async (dispatch)=>{
+export const getOrdersForDashboards=(queryString = "")=>async (dispatch)=>{
     try{
 
         dispatch({type:"IS_FETCHING"})
-        const {data}=await api.get(`/admin/orders?${queryString}`)
+        const {data}=await api.get(withQueryString("/admin/orders", queryString))
         dispatch({
             type: "GET_ADMIN_ORDERS",
             payload: data.content,
@@ -480,12 +482,12 @@ const getCurrentUserKey = (state) => {
     return user?.userId || user?.email || user?.username || null
 }
 
-export const getSellerOrders = (queryString) => async (dispatch, getState) => {
+export const getSellerOrders = (queryString = "") => async (dispatch, getState) => {
     const requestedSellerKey = getCurrentUserKey(getState())
 
     try {
         dispatch({type:"IS_FETCHING"})
-        const sellerOrderUrl = queryString ? `/seller/orders?${queryString}` : `/seller/orders`
+        const sellerOrderUrl = withQueryString("/seller/orders", queryString)
         const {data} = await api.get(sellerOrderUrl)
         const currentSellerKey = getCurrentUserKey(getState())
 
@@ -523,10 +525,10 @@ export const getSellerOrders = (queryString) => async (dispatch, getState) => {
     }
 }
 
-export const getLoggedInUserOrders = (queryString) => async (dispatch) => {
+export const getLoggedInUserOrders = (queryString = "") => async (dispatch) => {
     try {
         dispatch({type:"IS_FETCHING"})
-        const {data} = await api.get(`/my-orders?${queryString}`)
+        const {data} = await api.get(withQueryString("/my-orders", queryString))
         dispatch({
             type: "GET_PERSONAL_ORDERS",
             payload: data.content,
@@ -599,11 +601,11 @@ export const updateSellerOrderStatus = (orderId, status, notes, toast, setOpen, 
         setLoader?.(false)
     }
 }
-export const dashboardProductsAction=(queryString)=>async (dispatch)=>{
+export const dashboardProductsAction=(queryString = "")=>async (dispatch)=>{
     try{
 
         dispatch({type:"IS_FETCHING"})
-        const {data}=await api.get(`/admin/products?${queryString}`)
+        const {data}=await api.get(withQueryString("/admin/products", queryString))
         dispatch({
             type: "FETCH_PRODUCTS",
             payload: data.content,
@@ -624,10 +626,10 @@ export const dashboardProductsAction=(queryString)=>async (dispatch)=>{
     }
 }
 
-export const sellerProductsAction=(queryString)=>async (dispatch)=>{
+export const sellerProductsAction=(queryString = "")=>async (dispatch)=>{
     try{
         dispatch({type:"IS_FETCHING"})
-        const sellerProductUrl = queryString ? `/seller/products?${queryString}` : `/seller/products`
+        const sellerProductUrl = withQueryString("/seller/products", queryString)
         const {data}=await api.get(sellerProductUrl)
         dispatch({
             type: "FETCH_SELLER_PRODUCTS",
